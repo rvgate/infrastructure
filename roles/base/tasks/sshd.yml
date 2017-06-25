@@ -1,0 +1,10 @@
+---
+- name: Install public keys
+  include_role:
+    name: tersmitten.ssh-keys
+  vars:
+    ssh_keys_authorized_keys:
+      - owner: root
+        src: ssh-keys/rvgate-desktop.pub
+      - owner: root
+        src: ssh-keys/rvgate-phone.pub

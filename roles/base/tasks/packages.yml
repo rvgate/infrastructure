@@ -1,0 +1,26 @@
+---
+- name: Packages
+  apt:
+    pkg: "{{ item }}"
+    state: latest
+    update_cache: True
+  with_items:
+    - curl
+    - dnsutils
+    - docker.io
+    - git
+    - htop
+    - iftop
+    - iotop
+    - nload
+    - nmap
+    - ntp
+    - ntpdate
+    - openssh-server
+    - python
+    - screen
+    - ssh
+    - tig
+    - traceroute
+    - vim
+    - whois

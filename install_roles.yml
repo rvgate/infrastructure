@@ -1,0 +1,3 @@
+---
+- src: tersmitten.locales
+- src: tersmitten.ssh-keys
