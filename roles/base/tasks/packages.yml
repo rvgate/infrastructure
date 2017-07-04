@@ -7,7 +7,6 @@
   with_items:
     - curl
     - dnsutils
-    - docker.io
     - git
     - htop
     - iftop
@@ -22,5 +21,10 @@
     - ssh
     - tig
     - traceroute
+    - tree
     - vim
     - whois
+
+- name: Remove unused dependencies (ansible 2.3)
+  shell: apt autoremove -y
+  changed_when: False

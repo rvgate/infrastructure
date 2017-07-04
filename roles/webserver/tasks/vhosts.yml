@@ -1,0 +1,48 @@
+---
+- name: Install moyenne app
+  include_role:
+    name: geerlingguy.nginx
+  vars:
+    nginx_remove_default_vhost: true
+    nginx_vhosts:
+
+      - listen: "80 default_server"
+        server_name: "_ rvgate.nl www.rvgate.nl"
+        root: "/var/www/www.rvgate.nl"
+        index: "index.html"
+        filename: "www.rvgate.nl.ipv4-80.conf"
+        extra_parameters: |
+          location /moyenne {
+            return 302 http://moyenne.rvgate.nl/;
+          }
+          location /ynabconverter {
+            return 302 http://ynab.rvgate.nl/;
+          }
+
+      - listen: "80"
+        server_name: "moyenne.rvgate.nl"
+        root: "/var/www/moyenne.rvgate.nl"
+        index: "index.html"
+        filename: "moyenne.rvgate.nl.ipv4-80.conf"
+        extra_parameters: |
+          location ~ \.php$ {
+              fastcgi_split_path_info ^(.+\.php)(/.+)$;
+              fastcgi_pass unix:/var/run/php/php7.1-fpm.sock;
+              fastcgi_index index.php;
+              fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+              include fastcgi_params;
+          }
+
+      - listen: "80"
+        server_name: "ynab.rvgate.nl"
+        root: "/var/www/ynab.rvgate.nl"
+        index: "index.html"
+        filename: "ynab.rvgate.nl.ipv4-80.conf"
+        extra_parameters: |
+          location ~ \.php$ {
+              fastcgi_split_path_info ^(.+\.php)(/.+)$;
+              fastcgi_pass unix:/var/run/php/php7.1-fpm.sock;
+              fastcgi_index index.html;
+              fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+              include fastcgi_params;
+          }

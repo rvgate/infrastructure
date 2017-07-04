@@ -1,0 +1,23 @@
+---
+- name: Remove original index file
+  file:
+    dest: /var/www/html/index.nginx-debian.html
+    state: absent
+
+- name: Deploy rvgate.nl
+  git:
+    repo: https://github.com/rvgate/rvgate.nl.git
+    dest: /var/www/www.rvgate.nl/
+    depth: 1
+
+- name: Deploy moyenne berekening app
+  git:
+    repo: https://github.com/rvgate/MoyenneBerekening.git
+    dest: /var/www/moyenne.rvgate.nl/
+    depth: 1
+
+- name: Deploy YNAB converter app
+  git:
+    repo: https://github.com/rvgate/YnabConverter.git
+    dest: /var/www/ynab.rvgate.nl/
+    depth: 1

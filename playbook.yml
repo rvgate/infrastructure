@@ -2,3 +2,7 @@
 - hosts: all
   roles:
     - base
+
+- hosts: webserver
+  roles:
+    - webserver

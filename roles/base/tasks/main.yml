@@ -1,5 +1,6 @@
 ---
 - include: timezone.yml
+- include: ppa.yml
 - include: locale.yml
 - include: packages.yml
 - include: sshd.yml

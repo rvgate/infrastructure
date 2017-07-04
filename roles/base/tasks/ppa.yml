@@ -1,0 +1,7 @@
+---
+- name: Add additional repositories
+  apt_repository:
+    repo: "{{ item }}"
+  with_items:
+    - ppa:nginx/stable
+    - ppa:ondrej/php
