@@ -5,6 +5,7 @@
     state: latest
     update_cache: True
   with_items:
+    - ansible
     - curl
     - dnsutils
     - git
