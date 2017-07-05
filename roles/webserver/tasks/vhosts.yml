@@ -11,6 +11,7 @@
         root: "/var/www/www.rvgate.nl"
         index: "index.html"
         filename: "www.rvgate.nl.ipv4-80.conf"
+        template: "{{ playbook_dir}}/roles/webserver/templates/vhost.j2"
         extra_parameters: |
           location /moyenne {
             return 302 http://moyenne.rvgate.nl/;
@@ -24,6 +25,7 @@
         root: "/var/www/moyenne.rvgate.nl"
         index: "index.html"
         filename: "moyenne.rvgate.nl.ipv4-80.conf"
+        template: "{{ playbook_dir}}/roles/webserver/templates/vhost.j2"
         extra_parameters: |
           location ~ \.php$ {
               fastcgi_split_path_info ^(.+\.php)(/.+)$;
@@ -38,6 +40,7 @@
         root: "/var/www/ynab.rvgate.nl"
         index: "index.html"
         filename: "ynab.rvgate.nl.ipv4-80.conf"
+        template: "{{ playbook_dir}}/roles/webserver/templates/vhost.j2"
         extra_parameters: |
           location ~ \.php$ {
               fastcgi_split_path_info ^(.+\.php)(/.+)$;
