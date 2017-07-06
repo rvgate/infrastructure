@@ -1,0 +1,16 @@
+---
+- name: Install certbot
+  apt:
+    name: certbot
+    state: present
+
+- name: Copy certbot configuration
+  copy:
+    src: letsencrypt-cli.ini
+    dest: /etc/letsencrypt/cli.ini
+
+- name: Install cronjob to renew certificates
+  cron:
+    name: "Renew certificates"
+    special_time: weekly
+    job: "/usr/bin/certbot certonly && service nginx reload > /dev/null 2>&1"
