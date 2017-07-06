@@ -33,7 +33,7 @@
           location /ynabconverter {
             return 302 http://ynab.rvgate.nl/;
           }
-          ssl_certificate     /etc/letsencrypt/live/rvgate.nl/cert.pem;
+          ssl_certificate     /etc/letsencrypt/live/rvgate.nl/fullchain.pem;
           ssl_certificate_key /etc/letsencrypt/live/rvgate.nl/privkey.pem;
           ssl_protocols       TLSv1.1 TLSv1.2;
           ssl_ciphers         HIGH:!aNULL:!MD5;
@@ -67,7 +67,7 @@
               fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
               include fastcgi_params;
           }
-          ssl_certificate     /etc/letsencrypt/live/rvgate.nl/cert.pem;
+          ssl_certificate     /etc/letsencrypt/live/rvgate.nl/fullchain.pem;
           ssl_certificate_key /etc/letsencrypt/live/rvgate.nl/privkey.pem;
           ssl_protocols       TLSv1.1 TLSv1.2;
           ssl_ciphers         HIGH:!aNULL:!MD5;
