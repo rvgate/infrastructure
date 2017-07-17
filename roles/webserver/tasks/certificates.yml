@@ -13,4 +13,4 @@
   cron:
     name: "Renew certificates"
     special_time: weekly
-    job: "/usr/bin/certbot certonly && service nginx reload > /dev/null 2>&1"
+    job: "/usr/bin/certbot certonly --quiet && service nginx reload"
