@@ -5,6 +5,8 @@
   vars:
     ssh_keys_authorized_keys:
       - owner: root
-        src: ssh-keys/rvgate-desktop.pub
+        src: ssh-keys/rvgate-linux.pub
+      - owner: root
+        src: ssh-keys/rvgate-windows.pub
       - owner: root
         src: ssh-keys/rvgate-phone.pub
