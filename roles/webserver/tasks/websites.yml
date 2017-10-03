@@ -13,6 +13,7 @@
     - { domain: www.rvgate.nl, repo: "https://github.com/rvgate/rvgate.nl.git" }
     - { domain: moyenne.rvgate.nl, repo: "https://github.com/rvgate/MoyenneBerekening.git" }
     - { domain: ynab.rvgate.nl, repo: "https://github.com/rvgate/YnabConverter.git" }
+    - { domain: standen.rvgate.nl, repo: "https://github.com/rvgate/BiljartStanden.git" }
 
 - name: Link .well-known for certificate renewal
   file:
