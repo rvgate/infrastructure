@@ -11,6 +11,12 @@
 
 - name: Install cronjob to renew certificates
   cron:
-    name: "Renew certificates"
-    special_time: weekly
-    job: "/usr/bin/certbot certonly --quiet && service nginx reload"
+    name: Renew certificates
+    special_time: daily
+    job: "/usr/bin/certbot certonly > /dev/null 2>&1"
+
+- name: Install cronjob to reload nginx
+  cron:
+    name: Reload nginx
+    special_time: daily
+    job: "/usr/sbin/service nginx reload > /dev/null 2>&1"
