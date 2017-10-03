@@ -1,5 +1,5 @@
 ---
-- include: packages.yml
-- include: certificates.yml
-- include: websites.yml
-- include: vhosts.yml
+- include_tasks: packages.yml
+- include_tasks: certificates.yml
+- include_tasks: websites.yml
+- include_tasks: vhosts.yml
