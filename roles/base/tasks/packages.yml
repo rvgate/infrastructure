@@ -1,31 +1,24 @@
 ---
 - name: Packages
-  apt:
-    pkg: "{{ item }}"
-    state: latest
-    update_cache: True
+  package:
+    name: "{{ item }}"
+    state: present
   with_items:
-    - ansible
+    - crontabs
     - curl
-    - dnsutils
+    - dnf-plugins-core
     - git
     - htop
+    - httpd-tools
     - iftop
     - iotop
     - nload
     - nmap
-    - ntp
-    - ntpdate
-    - openssh-server
     - python
     - screen
-    - ssh
+    - telnet
     - tig
     - traceroute
     - tree
     - vim
     - whois
-
-- name: Remove unused dependencies (ansible 2.3)
-  shell: apt autoremove -y
-  changed_when: False

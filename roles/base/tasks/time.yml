@@ -1,0 +1,16 @@
+---
+- name: set timezone to utc
+  timezone:
+    name: Etc/UTC
+
+- name: install ntpdate
+  package:
+    name: ntpdate
+    state: present
+
+- name: setup ntpdate cronjob
+  cron:
+    name: "ntpdate"
+    special_time: daily
+    job: "/usr/sbin/ntpdate pool.ntp.org > /dev/null"
+    state: present

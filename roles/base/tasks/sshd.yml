@@ -1,12 +1,11 @@
 ---
-- name: Install public keys
-  include_role:
-    name: tersmitten.ssh-keys
-  vars:
-    ssh_keys_authorized_keys:
-      - owner: root
-        src: ssh-keys/rvgate-linux.pub
-      - owner: root
-        src: ssh-keys/rvgate-windows.pub
-      - owner: root
-        src: ssh-keys/rvgate-phone.pub
+- name: install public keys
+  authorized_key:
+    user: root
+    state: present
+    key: '{{ item }}'
+  with_file:
+    - public_keys/rvgate-linux.pub
+    - public_keys/rvgate-phone.pub
+    - public_keys/rvgate-virtual.pub
+    - public_keys/rvgate-windows.pub

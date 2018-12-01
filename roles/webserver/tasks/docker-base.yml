@@ -1,0 +1,38 @@
+---
+- name: install docker
+  package:
+    name: docker
+
+- name: install python docker library
+  pip:
+    name: docker
+
+- name: run portainer container
+  docker_container:
+    name: portainer-rvgate-nl
+    image: portainer/portainer
+    pull: yes
+    state: started
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data portainer/portainer
+    env:
+      VIRTUAL_HOST: portainer.rvgate.nl
+      VIRTUAL_PORT: 9000
+    command: "--admin-password '$2y$05$BJ3MUBMolVeXjt9rnrDJBOqo2/qMtXUMJPCOaUTwTieBIY5v8iYE6'"
+
+- name: setup nginx ingest container
+  docker_container:
+    name: nginx-ingest
+    image: jwilder/nginx-proxy
+    pull: yes
+    state: started
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - /etc/letsencrypt:/etc/letsencrypt
+      - /etc/letsencrypt/live/rvgate.nl:/etc/nginx/certs
+    env:
+      DEFAULT_HOST: rvgate.nl

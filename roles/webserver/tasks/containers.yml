@@ -1,0 +1,36 @@
+---
+- name: run rvgate.nl container
+  docker_container:
+    name: rvgate-nl
+    image: rvgate/rvgate-nl
+    pull: yes
+    state: started
+    env:
+      VIRTUAL_HOST: rvgate.nl
+
+- name: run moyenne.rvgate.nl container
+  docker_container:
+    name: moyenne-rvgate-nl
+    image: rvgate/moyenne-rvgate-nl
+    pull: yes
+    state: started
+    env:
+      VIRTUAL_HOST: moyenne.rvgate.nl
+
+- name: run standen.rvgate.nl container
+  docker_container:
+    name: standen-rvgate-nl
+    image: rvgate/standen-rvgate-nl
+    pull: yes
+    state: started
+    env:
+      VIRTUAL_HOST: standen.rvgate.nl
+
+- name: run ynab.rvgate.nl container
+  docker_container:
+    name: ynab-rvgate-nl
+    image: rvgate/ynab-rvgate-nl
+    pull: yes
+    state: started
+    env:
+      VIRTUAL_HOST: ynab.rvgate.nl
