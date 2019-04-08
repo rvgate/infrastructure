@@ -7,12 +7,21 @@
   pip:
     name: docker
 
+- name: run watchtower container
+  docker_container:
+    name: watchtower-autoupdate
+    image: v2tec/watchtower
+    restart_policy: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
 - name: run portainer container
   docker_container:
     name: portainer-rvgate-nl
     image: portainer/portainer
     pull: yes
     state: started
+    restart_policy: always
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer_data:/data portainer/portainer
@@ -21,12 +30,13 @@
       VIRTUAL_PORT: 9000
     command: "--admin-password '$2y$05$BJ3MUBMolVeXjt9rnrDJBOqo2/qMtXUMJPCOaUTwTieBIY5v8iYE6'"
 
-- name: setup nginx ingest container
+- name: run nginx ingest container
   docker_container:
     name: nginx-ingest
     image: jwilder/nginx-proxy
     pull: yes
     state: started
+    restart_policy: always
     ports:
       - 80:80
       - 443:443

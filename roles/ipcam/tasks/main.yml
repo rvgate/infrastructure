@@ -1,0 +1,14 @@
+---
+- name: run zoneminder container
+  docker_container:
+    name: zoneminder-rvgate-nl
+    image: dlandon/zoneminder
+    pull: yes
+    state: started
+    privileged: yes
+    volumes:
+      - zoneminder_config:/config
+      - zoneminder_data:/var/cache/zoneminder
+    env:
+      TZ: Europe/Amsterdam
+      VIRTUAL_HOST: zoneminder.rvgate.nl
