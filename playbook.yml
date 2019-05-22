@@ -3,5 +3,4 @@
   roles:
     - base
     - webserver
-    - vpn
     - ipcam

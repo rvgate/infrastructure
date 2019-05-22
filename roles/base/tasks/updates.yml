@@ -1,0 +1,9 @@
+---
+- name: Updates
+  dnf:
+    name: "*"
+    state: latest
+
+- name: Autoremove
+  dnf:
+    autoremove: yes

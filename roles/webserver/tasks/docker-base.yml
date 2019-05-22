@@ -11,7 +11,8 @@
   docker_container:
     name: watchtower-autoupdate
     image: v2tec/watchtower
-    restart_policy: always
+    restart_policy: unless-stopped
+    state: stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
@@ -26,15 +27,38 @@
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer_data:/data portainer/portainer
     env:
-      VIRTUAL_HOST: portainer.rvgate.nl
-      VIRTUAL_PORT: 9000
+      VIRTUAL_HOST: "portainer.rvgate.nl"
+      VIRTUAL_PORT: "9000"
     command: "--admin-password '$2y$05$BJ3MUBMolVeXjt9rnrDJBOqo2/qMtXUMJPCOaUTwTieBIY5v8iYE6'"
+
+- name: create tmp docker directory
+  file:
+    path: /srv/docker/nginx-ingest
+    state: directory
+
+- name: upload nginx dockerfile
+  tags: build
+  copy:
+    src: nginx-ingest.Dockerfile
+    dest: /srv/docker/nginx-ingest/Dockerfile
+
+- name: build nginx ingest container
+  docker_image:
+    build:
+      pull: yes
+      path: /srv/docker/nginx-ingest/
+    name: nginx-ingest
+    tag: latest
+    source: build
+    force_absent: yes
+    force_tag: yes
+    force_source: yes
+    state: present
 
 - name: run nginx ingest container
   docker_container:
     name: nginx-ingest
-    image: jwilder/nginx-proxy
-    pull: yes
+    image: nginx-ingest:latest
     state: started
     restart_policy: always
     ports:
@@ -45,4 +69,4 @@
       - /etc/letsencrypt:/etc/letsencrypt
       - /etc/letsencrypt/live/rvgate.nl:/etc/nginx/certs
     env:
-      DEFAULT_HOST: rvgate.nl
+      DEFAULT_HOST: "rvgate.nl"

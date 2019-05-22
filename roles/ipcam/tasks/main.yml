@@ -10,5 +10,5 @@
       - zoneminder_config:/config
       - zoneminder_data:/var/cache/zoneminder
     env:
-      TZ: Europe/Amsterdam
-      VIRTUAL_HOST: zoneminder.rvgate.nl
+      TZ: "Europe/Amsterdam"
+      VIRTUAL_HOST: "zoneminder.rvgate.nl"

@@ -1,24 +1,24 @@
 ---
 - name: Packages
-  package:
-    name: "{{ item }}"
+  dnf:
+    name: [
+      'crontabs',
+      'curl',
+      'dnf-plugins-core',
+      'git',
+      'htop',
+      'httpd-tools',
+      'iftop',
+      'iotop',
+      'nload',
+      'nmap',
+      'python',
+      'screen',
+      'telnet',
+      'tig',
+      'traceroute',
+      'tree',
+      'vim',
+      'whois',
+    ]
     state: present
-  with_items:
-    - crontabs
-    - curl
-    - dnf-plugins-core
-    - git
-    - htop
-    - httpd-tools
-    - iftop
-    - iotop
-    - nload
-    - nmap
-    - python
-    - screen
-    - telnet
-    - tig
-    - traceroute
-    - tree
-    - vim
-    - whois
