@@ -4,7 +4,7 @@ echo "Fetching logs from journalctl"
 journalctl -u docker CONTAINER_NAME=nginx-ingest |grep "\- \-" |cut -d "|" -f2 |sed -e 's/^[ \t]*//' > ${TMP_FILE}
 LINES=`wc -l ${TMP_FILE}`
 echo "Found ${LINES} lines"
-HOSTS=`cat ${TMP_FILE} |cut -d " " -f1 |sort |uniq |grep rvgate`
+HOSTS=$(grep rvgate ${TMP_FILE} | awk '{print $1}' | sort | uniq)
 for HOST in ${HOSTS}; do
   echo "Generating stats for ${HOST}"
   HOST_PATH="/var/lib/docker/volumes/goaccess-static/_data/${HOST}"
