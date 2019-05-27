@@ -50,6 +50,7 @@
   with_items:
     - { src: nginx-stats.Dockerfile, dest: /srv/docker/nginx-stats/Dockerfile }
     - { src: nginx-stats.conf, dest: /srv/docker/nginx-stats/nginx-stats.conf }
+    - { src: goaccess-generate.sh, dest: /srv/docker/nginx-stats/generate.sh }
 
 - name: build nginx stats container
   docker_image:
@@ -78,12 +79,6 @@
 - name: install goaccess
   dnf:
     name: goaccess
-
-- name: copy goaccess generate script
-  copy:
-    src: goaccess-generate.sh
-    dest: /var/lib/docker/volumes/goaccess-static/_data/generate.sh
-    mode: preserve
 
 - name: setup goaccess cron for reports
   cron:
