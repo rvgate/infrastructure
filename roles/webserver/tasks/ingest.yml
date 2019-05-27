@@ -49,8 +49,7 @@
     dest: "{{ item.dest }}"
   with_items:
     - { src: nginx-stats.Dockerfile, dest: /srv/docker/nginx-stats/Dockerfile }
-    - { src: nginx-stats.conf, dest: /srv/docker/nginx-stats/nginx-stats.conf }
-    - { src: goaccess-generate.sh, dest: /srv/docker/nginx-stats/generate.sh }
+    - { src: goaccess-generate.sh, dest: /srv/docker/nginx-stats/goaccess-generate.sh }
 
 - name: build nginx stats container
   docker_image:
@@ -72,7 +71,7 @@
     state: started
     restart_policy: always
     volumes:
-      - goaccess-static:/usr/share/nginx/html
+      - goaccess-static:/var/www
     env:
       VIRTUAL_HOST: "stats.rvgate.nl"
 
