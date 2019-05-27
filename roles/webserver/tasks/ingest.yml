@@ -1,0 +1,94 @@
+---
+- name: create tmp docker directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - /srv/docker/nginx-ingest
+    - /srv/docker/nginx-stats
+
+- name: upload nginx dockerfile
+  tags: build
+  copy:
+    src: nginx-ingest.Dockerfile
+    dest: /srv/docker/nginx-ingest/Dockerfile
+
+- name: build nginx ingest container
+  docker_image:
+    build:
+      pull: yes
+      path: /srv/docker/nginx-ingest/
+    name: nginx-ingest
+    tag: latest
+    source: build
+    force_absent: yes
+    force_tag: yes
+    force_source: yes
+    state: present
+
+- name: run nginx ingest container
+  docker_container:
+    name: nginx-ingest
+    image: nginx-ingest:latest
+    state: started
+    restart_policy: always
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - /etc/letsencrypt:/etc/letsencrypt
+      - /etc/letsencrypt/live/rvgate.nl:/etc/nginx/certs
+    env:
+      DEFAULT_HOST: "rvgate.nl"
+
+- name: upload stats dockerfile
+  tags: build
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  with_items:
+    - { src: nginx-stats.Dockerfile, dest: /srv/docker/nginx-stats/Dockerfile }
+    - { src: nginx-stats.conf, dest: /srv/docker/nginx-stats/nginx-stats.conf }
+
+- name: build nginx stats container
+  docker_image:
+    build:
+      pull: yes
+      path: /srv/docker/nginx-stats/
+    name: nginx-stats
+    tag: latest
+    source: build
+    force_absent: yes
+    force_tag: yes
+    force_source: yes
+    state: present
+
+- name: run stats container
+  docker_container:
+    name: stats-rvgate-nl
+    image: nginx-stats:latest
+    state: started
+    restart_policy: always
+    volumes:
+      - goaccess-static:/usr/share/nginx/html
+    env:
+      VIRTUAL_HOST: "stats.rvgate.nl"
+
+- name: install goaccess
+  dnf:
+    name: goaccess
+
+- name: copy goaccess generate script
+  copy:
+    src: goaccess-generate.sh
+    dest: /var/lib/docker/volumes/goaccess-static/_data/generate.sh
+    mode: preserve
+
+- name: setup goaccess cron for reports
+  cron:
+    name: "goaccess report"
+    special_time: hourly
+    job: "bash -x /var/lib/docker/volumes/goaccess-static/_data/generate.sh > /dev/null"
+    state: present
+

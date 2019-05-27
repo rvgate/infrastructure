@@ -1,7 +1,7 @@
 ---
 - name: run nextcloud container
   docker_container:
-    name: nextcloud-rvgate-nl
+    name: cloud-rvgate-nl
     image: nextcloud
     pull: yes
     state: started
@@ -9,4 +9,4 @@
     volumes:
       - nextcloud-data:/var/www/html/data/
     env:
-      VIRTUAL_HOST: "nextcloud.rvgate.nl"
+      VIRTUAL_HOST: "cloud.rvgate.nl"
