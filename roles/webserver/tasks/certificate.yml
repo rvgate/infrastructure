@@ -1,12 +1,12 @@
 ---
 - name: install certbot
-  package:
-    name: certbot
-    state: present
-
-- name: install certbot cloudflare plugin
-  pip:
-    name: certbot-dns-cloudflare
+  dnf:
+    name: [
+       'certbot',
+       'python3-cloudflare',
+       'python3-certbot',
+       'python3-certbot-dns-cloudflare',
+    ]
     state: present
 
 - name: create letsencrypt directory
