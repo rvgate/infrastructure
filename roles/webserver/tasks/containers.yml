@@ -25,3 +25,12 @@
     state: started
     env:
       VIRTUAL_HOST: standen.rvgate.nl
+
+- name: run spelers.rvgate.nl container
+  docker_container:
+    name: spelers-rvgate-nl
+    image: rvgate/spelers-rvgate-nl
+    pull: yes
+    state: started
+    env:
+      VIRTUAL_HOST: spelers.rvgate.nl
