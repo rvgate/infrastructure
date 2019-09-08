@@ -3,7 +3,11 @@
   roles:
     - base
 
-- hosts: vps
+- hosts: raspberry
+  roles:
+    - pihole
+
+- hosts: fedora
   roles:
     - webserver
     - ipcam
