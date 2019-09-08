@@ -1,0 +1,8 @@
+---
+- name: install docker
+  package:
+    name: docker
+
+- name: pip packages
+  pip:
+    name: docker

@@ -1,0 +1,46 @@
+---
+- name: install certbot
+  package:
+    name: [
+       'certbot',
+       'python3-cloudflare',
+       'python3-certbot',
+       'python3-certbot-dns-cloudflare',
+    ]
+    state: present
+
+- name: create letsencrypt directory
+  file:
+    path: /etc/letsencrypt
+    state: directory
+    mode: 0700
+
+- name: copy cloudflare configuration
+  copy:
+    src: letsencrypt-cloudflare.ini
+    dest: /etc/letsencrypt/cloudflare.ini
+    mode: 0400
+
+- name: request first wildcard certificate
+  command: "/usr/bin/certbot certonly --dns-cloudflare --dns-cloudflare-credentials /etc/letsencrypt/cloudflare.ini -d {{ domain }},*.{{ domain }} --preferred-challenges dns-01 --non-interactive --agree-tos -m info@rvgate.nl"
+  args:
+    creates: "/etc/letsencrypt/live/{{ domain }}/privkey.pem"
+
+- name: symlink certificate to correct name
+  file:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    state: link
+    force: yes
+  ignore_errors: yes
+  with_items:
+    - {src: "/etc/letsencrypt/live/{{ domain }}-0001", dest: "/etc/letsencrypt/live/{{ domain }}"}
+    - {src: "/etc/letsencrypt/live/{{ domain }}/cert.pem", dest: "/etc/letsencrypt/live/{{ domain }}/{{ domain }}.crt"}
+    - {src: "/etc/letsencrypt/live/{{ domain }}/privkey.pem", dest: "/etc/letsencrypt/live/{{ domain }}/{{ domain }}.key"}
+
+- name: setup certbot cronjob
+  cron:
+    name: certbot
+    special_time: weekly
+    job: "/usr/bin/certbot certonly --dns-cloudflare --dns-cloudflare-credentials /etc/letsencrypt/cloudflare.ini -d {{ domain }},*.{{ domain }} --preferred-challenges dns-01 --non-interactive --agree-tos -m info@{{ domain }} > /dev/null"
+    state: present

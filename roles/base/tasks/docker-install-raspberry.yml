@@ -1,0 +1,27 @@
+---
+- name: install required debian docker packages
+  apt:
+    name: [
+      'apt-transport-https',
+      'ca-certificates',
+      'software-properties-common',
+    ]
+
+- name: add apt-key
+  apt_key:
+    url: https://download.docker.com/linux/raspbian/gpg
+    state: present
+
+- name: add docker apt repository
+  apt_repository:
+    repo: deb https://download.docker.com/linux/raspbian/ stretch stable
+    state: present
+
+- name: install docker
+  apt:
+    name: docker-ce
+    install_recommends: False
+
+- name: pip packages
+  apt:
+    name: python-docker

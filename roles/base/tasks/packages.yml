@@ -1,18 +1,16 @@
 ---
 - name: system packages
-  dnf:
+  package:
     name: [
-      'crontabs',
       'curl',
-      'dnf-plugins-core',
       'git',
       'htop',
-      'httpd-tools',
       'iftop',
       'iotop',
       'nload',
       'nmap',
       'python',
+      'python-pip',
       'screen',
       'telnet',
       'tig',
@@ -20,6 +18,24 @@
       'tree',
       'unzip',
       'vim',
+      'virtualenv',
       'whois',
     ]
     state: present
+
+- name: install fedora specific packages
+  dnf:
+    name: [
+      'crontabs',
+      'dnf-plugins-core',
+      'httpd-tools',
+    ]
+  when: ansible_distribution == 'Fedora'
+
+- name: install debian specific packages
+  apt:
+    name: [
+      'apache2-utils',
+      'cron',
+    ]
+  when: ansible_distribution == 'Debian'

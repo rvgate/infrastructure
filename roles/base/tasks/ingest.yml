@@ -9,7 +9,7 @@
 
 - name: upload nginx dockerfile
   tags: build
-  copy:
+  template:
     src: nginx-ingest.Dockerfile
     dest: /srv/docker/nginx-ingest/Dockerfile
 
@@ -36,22 +36,28 @@
       - 80:80
       - 443:443
     volumes:
-      - /var/run/docker.sock:/tmp/docker.sock:ro
-      - /etc/letsencrypt:/etc/letsencrypt
-      - /etc/letsencrypt/live/rvgate.nl:/etc/nginx/certs
+      - "/var/run/docker.sock:/tmp/docker.sock:ro"
+      - "/etc/letsencrypt:/etc/letsencrypt"
+      - "/etc/letsencrypt/live/{{ domain }}:/etc/nginx/certs"
     env:
-      DEFAULT_HOST: "rvgate.nl"
+      DEFAULT_HOST: "{{ domain }}"
+
+- name: restart ingest container weekly
+  cron:
+    name: restart ingest to reload certificates
+    special_time: weekly
+    job: "/usr/bin/docker restart nginx-ingest > /dev/null"
 
 - name: run stats container
   docker_container:
-    name: stats-rvgate-nl
+    name: statistics
     image: php:apache
     state: started
     restart_policy: always
     volumes:
       - goaccess-static:/var/www/html
     env:
-      VIRTUAL_HOST: "stats.rvgate.nl"
+      VIRTUAL_HOST: "stats.{{ domain }}"
 
 - name: get latest h5ai autoindex
   get_url:
@@ -77,7 +83,7 @@
     mode: '0757'
 
 - name: install goaccess
-  dnf:
+  package:
     name: goaccess
 
 - name: upload goaccess-generate.sh script

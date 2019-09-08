@@ -1,0 +1,23 @@
+---
+- name: include debian docker based installation
+  include: docker-install-raspberry.yml
+  when: inventory_hostname in groups.raspberry
+
+- name: include fedora docker based installation
+  include: docker-install-fedora.yml
+  when: inventory_hostname in groups.fedora
+
+- name: run portainer container
+  docker_container:
+    name: portainer
+    image: portainer/portainer
+    pull: yes
+    state: started
+    restart_policy: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data portainer/portainer
+    env:
+      VIRTUAL_HOST: "portainer.{{ domain }}"
+      VIRTUAL_PORT: "9000"
+    command: "--admin-password '$2y$05$BJ3MUBMolVeXjt9rnrDJBOqo2/qMtXUMJPCOaUTwTieBIY5v8iYE6'"

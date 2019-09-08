@@ -1,9 +1,9 @@
 ---
 - name: Updates
-  dnf:
+  package:
     name: "*"
     state: latest
 
 - name: Autoremove
-  dnf:
+  package:
     autoremove: yes

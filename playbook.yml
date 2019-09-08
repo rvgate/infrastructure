@@ -2,6 +2,9 @@
 - hosts: all
   roles:
     - base
+
+- hosts: vps
+  roles:
     - webserver
     - ipcam
     - cloud

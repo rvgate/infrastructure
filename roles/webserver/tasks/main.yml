@@ -1,4 +1,2 @@
 ---
 - include_tasks: containers.yml
-- include_tasks: certificate.yml
-- include_tasks: ingest.yml

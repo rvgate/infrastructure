@@ -3,4 +3,6 @@
 - include_tasks: time.yml
 - include_tasks: sshd.yml
 - include_tasks: updates.yml
-- include_tasks: docker-base.yml
+- include_tasks: docker.yml
+- include_tasks: certificate.yml
+- include_tasks: ingest.yml
