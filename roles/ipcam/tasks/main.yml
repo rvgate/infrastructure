@@ -5,6 +5,7 @@
     image: dlandon/zoneminder
     pull: yes
     state: started
+    restart_policy: always
     privileged: yes
     volumes:
       - zoneminder_config:/config

@@ -4,6 +4,7 @@
     name: dns-sinkhole
     image: pihole/pihole
     state: started
+    restart_policy: always
     ports:
       - "53:53/udp"
     volumes:

@@ -4,6 +4,7 @@
     name: cloud-rvgate-nl
     image: nextcloud
     state: started
+    restart_policy: always
     privileged: yes
     volumes:
       - nextcloud-data:/var/www/html/data/
