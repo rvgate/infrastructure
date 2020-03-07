@@ -2,13 +2,13 @@
 - hosts: all
   roles:
     - base
+    - cicd
 
 - hosts: raspberry
   roles:
     - pihole
+    - ipcam
 
 - hosts: fedora
   roles:
     - webserver
-    - ipcam
-    - cloud

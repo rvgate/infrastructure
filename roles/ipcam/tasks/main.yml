@@ -1,15 +1,20 @@
 ---
-- name: run zoneminder container
+- name: run shinobi container
   docker_container:
-    name: zoneminder-rvgate-nl
-    image: dlandon/zoneminder
+    name: shinobi
+    image: jkilloy/shinobi
     pull: yes
     state: started
     restart_policy: always
     privileged: yes
     volumes:
-      - zoneminder_config:/config
-      - zoneminder_data:/var/cache/zoneminder
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - shinobi_config:/config
+      - shinobi_data:/var/lib/mysql
+      - shinobi_videos:/opt/shinobi/videos
+      - shinobi_streams:/dev/shm/streams
     env:
       TZ: "Europe/Amsterdam"
-      VIRTUAL_HOST: "zoneminder.rvgate.nl"
+      VIRTUAL_PORT: "8080"
+      VIRTUAL_HOST: "shinobi.{{ domain }}"

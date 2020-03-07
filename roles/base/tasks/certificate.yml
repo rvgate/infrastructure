@@ -3,9 +3,8 @@
   package:
     name: [
        'certbot',
-       'python3-cloudflare',
        'python3-certbot',
-       'python3-certbot-dns-cloudflare',
+       'python3-certbot-dns-route53',
     ]
     state: present
 
@@ -15,32 +14,49 @@
     state: directory
     mode: 0700
 
-- name: copy cloudflare configuration
+- name: create aws credentials directory
+  file:
+    path: /root/.aws
+    state: directory
+    mode: 0700
+
+- name: copy aws credentials
   copy:
-    src: letsencrypt-cloudflare.ini
-    dest: /etc/letsencrypt/cloudflare.ini
-    mode: 0400
+    src: aws-credentials.ini
+    dest: /root/.aws/credentials
+
+- name: create nginx certificates location
+  file:
+    path: /etc/letsencrypt/live/nginx
+    state: directory
+    mode: 0700
 
 - name: request first wildcard certificate
-  command: "/usr/bin/certbot certonly --dns-cloudflare --dns-cloudflare-credentials /etc/letsencrypt/cloudflare.ini -d {{ domain }},*.{{ domain }} --preferred-challenges dns-01 --non-interactive --agree-tos -m info@rvgate.nl"
+  command: "/usr/bin/certbot certonly --cert-name {{ item }} --dns-route53 -d {{ item }},*.{{ item }} --preferred-challenges dns-01 --non-interactive --agree-tos -m info@{{ item }}"
   args:
-    creates: "/etc/letsencrypt/live/{{ domain }}/privkey.pem"
+    creates: "/etc/letsencrypt/live/{{ item }}/privkey.pem"
+  with_items: "{{ DOMAINS }}"
 
-- name: symlink certificate to correct name
+- name: link certificate fullchain to crt
   file:
-    src: "{{ item.src }}"
-    dest: "{{ item.dest }}"
+    src: "/etc/letsencrypt/live/{{ item }}/fullchain.pem"
+    dest: "/etc/letsencrypt/live/nginx/{{ item }}.crt"
     state: link
     force: yes
-  ignore_errors: yes
-  with_items:
-    - {src: "/etc/letsencrypt/live/{{ domain }}-0001", dest: "/etc/letsencrypt/live/{{ domain }}"}
-    - {src: "/etc/letsencrypt/live/{{ domain }}/fullchain.pem", dest: "/etc/letsencrypt/live/{{ domain }}/{{ domain }}.crt"}
-    - {src: "/etc/letsencrypt/live/{{ domain }}/privkey.pem", dest: "/etc/letsencrypt/live/{{ domain }}/{{ domain }}.key"}
+  with_items: "{{ DOMAINS }}"
+
+- name: link certificate privkey to key
+  file:
+    src: "/etc/letsencrypt/live/{{ item }}/privkey.pem"
+    dest: "/etc/letsencrypt/live/nginx/{{ item }}.key"
+    state: link
+    force: yes
+  with_items: "{{ DOMAINS }}"
 
 - name: setup certbot cronjob
   cron:
-    name: certbot
+    name: "certbot {{ item }}"
     special_time: weekly
-    job: "/usr/bin/certbot certonly --dns-cloudflare --dns-cloudflare-credentials /etc/letsencrypt/cloudflare.ini -d {{ domain }},*.{{ domain }} --preferred-challenges dns-01 --non-interactive --agree-tos -m info@{{ domain }} > /dev/null"
+    job: "/usr/bin/certbot certonly --cert-name {{ item }} --dns-route53 -d {{ item }},*.{{ item }} --preferred-challenges dns-01 --non-interactive --agree-tos -m info@{{ item }} > /dev/null"
     state: present
+  with_items: "{{ DOMAINS }}"

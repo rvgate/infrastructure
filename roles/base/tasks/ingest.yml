@@ -1,11 +1,8 @@
 ---
 - name: create tmp docker directories
   file:
-    path: "{{ item }}"
+    path: /srv/docker/nginx-ingest
     state: directory
-  with_items:
-    - /srv/docker/nginx-ingest
-    - /srv/docker/nginx-stats
 
 - name: upload nginx dockerfile
   tags: build
@@ -38,7 +35,7 @@
     volumes:
       - "/var/run/docker.sock:/tmp/docker.sock:ro"
       - "/etc/letsencrypt:/etc/letsencrypt"
-      - "/etc/letsencrypt/live/{{ domain }}:/etc/nginx/certs"
+      - "/etc/letsencrypt/live/nginx:/etc/nginx/certs"
     env:
       DEFAULT_HOST: "{{ domain }}"
 
@@ -47,54 +44,3 @@
     name: restart ingest to reload certificates
     special_time: weekly
     job: "/usr/bin/docker restart nginx-ingest > /dev/null"
-
-- name: run stats container
-  docker_container:
-    name: statistics
-    image: php:apache
-    state: started
-    restart_policy: always
-    volumes:
-      - goaccess-static:/var/www/html
-    env:
-      VIRTUAL_HOST: "stats.{{ domain }}"
-
-- name: get latest h5ai autoindex
-  get_url:
-    url: "https://release.larsjung.de/h5ai/h5ai-0.29.2.zip"
-    dest: /srv/docker/nginx-stats/h5ai.zip
-
-- name: unarchive h5ai autoindex
-  unarchive:
-    src: /srv/docker/nginx-stats/h5ai.zip
-    dest: /var/lib/docker/volumes/goaccess-static/_data/
-    remote_src: yes
-
-- name: configure stats .htaccess
-  lineinfile:
-    path: /var/lib/docker/volumes/goaccess-static/_data/.htaccess
-    line: "DirectoryIndex index.html index.php /_h5ai/public/index.php"
-    create: yes
-
-- name: allow writing in stats cache dir
-  file:
-    path: /var/lib/docker/volumes/goaccess-static/_data/_h5ai/private/cache
-    state: directory
-    mode: '0757'
-
-- name: install goaccess
-  package:
-    name: goaccess
-
-- name: upload goaccess-generate.sh script
-  tags: build
-  copy:
-    src: goaccess-generate.sh
-    dest: /srv/docker/nginx-stats/goaccess-generate.sh
-
-- name: setup goaccess cron for reports
-  cron:
-    name: "goaccess report"
-    special_time: hourly
-    job: "bash -x /srv/docker/nginx-stats/goaccess-generate.sh > /dev/null"
-    state: present
