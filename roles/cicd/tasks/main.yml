@@ -18,7 +18,7 @@
       DRONE_USER_FILTER: "{{ DRONE_USER_FILTER }}"
       VIRTUAL_PORT: "80"
       VIRTUAL_HOST: "{{ DRONE_SERVER_HOST }}"
-  when: inventory_hostname in groups['raspberry']
+  when: inventory_hostname in groups['fedora']
 
 
 - name: run drone docker runner
