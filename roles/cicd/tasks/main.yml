@@ -15,6 +15,7 @@
       DRONE_SERVER_HOST: "{{ DRONE_SERVER_HOST }}"
       DRONE_SERVER_PROTO: "https"
       DRONE_USER_CREATE: "{{ DRONE_USER_CREATE }}"
+      DRONE_USER_FILTER: "{{ DRONE_USER_FILTER }}"
       VIRTUAL_PORT: "80"
       VIRTUAL_HOST: "{{ DRONE_SERVER_HOST }}"
   when: inventory_hostname in groups['raspberry']
