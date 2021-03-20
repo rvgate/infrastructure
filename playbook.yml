@@ -7,7 +7,6 @@
 - hosts: raspberry
   roles:
     - pihole
-    - ipcam
 
 - hosts: fedora
   roles:
