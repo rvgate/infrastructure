@@ -1,14 +1,4 @@
 ---
-- name: run moyenne.rvgate.nl container
-  docker_container:
-    name: moyenne-rvgate-nl
-    image: rvgate/moyenne-rvgate-nl
-    pull: yes
-    state: started
-    restart_policy: always
-    env:
-      VIRTUAL_HOST: moyenne.rvgate.nl
-
 - name: run standen.rvgate.nl container
   docker_container:
     name: standen-rvgate-nl
