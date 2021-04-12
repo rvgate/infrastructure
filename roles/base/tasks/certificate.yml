@@ -1,12 +1,34 @@
 ---
-- name: install certbot
-  package:
-    name: [
-       'certbot',
-       'python3-certbot',
-       'python3-certbot-dns-route53',
-    ]
-    state: present
+- name: install certbot snap
+  snap:
+    classic: yes
+    name:
+      - certbot
+
+- name: trust certbot plugin snap
+  ansible.builtin.command:
+    cmd: snap set certbot trust-plugin-with-root=ok
+    creates: /snap/.snap_certbut_trusted
+  register: certbot_trust
+
+- name: write certbot trusted file
+  copy:
+    content: ""
+    dest: /snap/.snap_certbut_trusted
+  when: certbot_trust.changed
+
+- name: install certbot-dns-route53 snap
+  snap:
+    classic: yes
+    name:
+      - certbot-dns-route53
+
+- name: symlink certbot
+  file:
+    src: "/snap/bin/certbot"
+    dest: "/usr/bin/certbot"
+    state: link
+    force: yes
 
 - name: create letsencrypt directory
   file:
