@@ -11,7 +11,7 @@ fedora: venv
 	./venv/bin/ansible-playbook playbook.yml -l fedora
 
 venv:
-	virtualenv venv -p python3.6
+	virtualenv venv -p python3.9
 	./venv/bin/pip install -r requirements.txt
 
 decrypt:
