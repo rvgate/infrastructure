@@ -3,9 +3,9 @@
   timezone:
     name: Etc/UTC
 
-- name: install ntpdate
+- name: install ntpsec
   package:
-    name: ntpdate
+    name: ntpsec
     state: present
 
 - name: setup ntpdate cronjob

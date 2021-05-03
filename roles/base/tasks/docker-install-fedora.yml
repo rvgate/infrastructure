@@ -1,7 +1,24 @@
 ---
+- name: Add docker repository
+  command:
+    cmd: dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
+    warn: false
+  args:
+    creates: /etc/yum.repos.d/docker.repo
+
 - name: install docker
   package:
+    name: [
+      'docker-ce',
+      'docker-ce-cli',
+      'containerd.io',
+    ]
+
+- name: start docker service
+  ansible.builtin.service:
     name: docker
+    enabled: yes
+    state: started
 
 - name: pip packages
   pip:
