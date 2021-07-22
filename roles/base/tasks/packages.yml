@@ -1,4 +1,25 @@
 ---
+- name: install fedora specific packages
+  dnf:
+    name: [
+        'crontabs',
+        'dnf-plugins-core',
+        'fuse',
+        'httpd-tools',
+        'kernel-modules',
+        'squashfuse',
+    ]
+  when: ansible_distribution == 'Fedora'
+
+- name: install debian specific packages
+  apt:
+    name: [
+        'apache2-utils',
+        'cron',
+        'dnsutils',
+    ]
+  when: ansible_distribution == 'Debian'
+
 - name: system packages
   package:
     name: [
@@ -35,18 +56,6 @@
   command: "snap refresh core"
   when: snap_core.changed
 
-- name: install fedora specific packages
-  dnf:
-    name: [
-      'crontabs',
-      'dnf-plugins-core',
-      'fuse',
-      'httpd-tools',
-      'kernel-modules',
-      'squashfuse',
-    ]
-  when: ansible_distribution == 'Fedora'
-
 - name: symlink snap
   file:
     src: "/var/lib/snapd/snap"
@@ -54,12 +63,3 @@
     state: link
     force: yes
   when: ansible_distribution == 'Fedora'
-
-- name: install debian specific packages
-  apt:
-    name: [
-      'apache2-utils',
-      'cron',
-      'dnsutils',
-    ]
-  when: ansible_distribution == 'Debian'
