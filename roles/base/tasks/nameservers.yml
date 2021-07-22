@@ -1,0 +1,8 @@
+- name: Configure nameservers
+  template:
+    src: resolv.conf
+    dest: /etc/resolv.conf
+    owner: root
+    group: root
+    mode: 0644
+    backup: yes

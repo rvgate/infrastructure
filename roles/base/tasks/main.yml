@@ -1,4 +1,5 @@
 ---
+- include_tasks: nameservers.yml
 - include_tasks: packages.yml
 - include_tasks: time.yml
 - include_tasks: sshd.yml
