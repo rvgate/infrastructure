@@ -10,7 +10,7 @@
 - name: run portainer container
   docker_container:
     name: portainer
-    image: portainer/portainer
+    image: portainer/portainer:latest
     pull: yes
     state: started
     restart_policy: always

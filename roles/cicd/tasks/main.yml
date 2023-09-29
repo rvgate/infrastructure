@@ -2,7 +2,7 @@
 - name: drone container
   docker_container:
     name: drone
-    image: drone/drone:1
+    image: drone/drone:latest
     pull: yes
     state: started
     restart_policy: always
@@ -24,7 +24,7 @@
 - name: run drone docker runner
   docker_container:
     name: drone-runner
-    image: drone/drone-runner-docker:1
+    image: drone/drone-runner-docker:latest
     pull: yes
     state: started
     restart_policy: always
