@@ -1,32 +1,16 @@
 ---
-- name: create tmp docker directories
-  file:
-    path: /srv/docker/nginx-ingest
-    state: directory
-
-- name: upload nginx dockerfile
-  tags: build
-  template:
-    src: nginx-ingest.Dockerfile
-    dest: /srv/docker/nginx-ingest/Dockerfile
-
-- name: build nginx ingest container
-  docker_image:
-    build:
-      pull: yes
-      path: /srv/docker/nginx-ingest/
-    name: nginx-ingest
-    tag: latest
-    source: build
-    force_absent: yes
-    force_tag: yes
-    force_source: yes
-    state: present
-
-- name: run nginx ingest container
+- name: nginx default page
   docker_container:
-    name: nginx-ingest
-    image: nginx-ingest:latest
+    name: default
+    image: nginx
+    state: started
+    env:
+      VIRTUAL_HOST: "{{ domain }}"
+
+- name: nginx ingest
+  docker_container:
+    name: ingest
+    image: nginxproxy/nginx-proxy
     state: started
     restart_policy: always
     ports:
@@ -35,8 +19,7 @@
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
       - /etc/letsencrypt:/etc/letsencrypt
-      - /etc/letsencrypt/live/nginx:/etc/nginx/certs
-      - nginx_ingest_dhparam:/etc/nginx/dhparam
+      - /etc/nginx/certs:/etc/nginx/certs
     env:
       DEFAULT_HOST: "{{ domain }}"
 
@@ -44,4 +27,4 @@
   cron:
     name: restart ingest to reload certificates
     special_time: weekly
-    job: "/usr/bin/docker restart nginx-ingest > /dev/null"
+    job: /usr/bin/docker restart ingest > /dev/null

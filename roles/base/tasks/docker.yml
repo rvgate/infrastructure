@@ -1,11 +1,30 @@
 ---
-- name: include debian docker based installation
-  include: docker-install-raspberry.yml
+- name: include Ubuntu docker based installation
+  include_tasks: docker-install-ubuntu.yml
+  when: ansible_distribution == 'Ubuntu'
+
+- name: include Raspbian docker based installation
+  include_tasks: docker-install-raspbian.yml
   when: inventory_hostname in groups.raspberry
 
-- name: include fedora docker based installation
-  include: docker-install-fedora.yml
-  when: inventory_hostname in groups.fedora
+- name: include Fedora docker based installation
+  include_tasks: docker-install-fedora.yml
+  when: ansible_distribution == 'Fedora'
+
+- name: generate portainer password
+  ansible.builtin.shell:
+    cmd: >
+      htpasswd -nbB admin '{{ portainer_password }}'
+      | cut -d ':' -f 2
+      | xargs echo -n
+      > ~/.portainer_password
+    creates: ~/.portainer_password
+
+- name: save generated password
+  ansible.builtin.shell:
+      cmd: cat ~/.portainer_password
+  register: generated_portainer_password
+  changed_when: False
 
 - name: run portainer container
   docker_container:
@@ -16,8 +35,7 @@
     restart_policy: always
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - portainer_data:/data
     env:
       VIRTUAL_HOST: "portainer.{{ domain }}"
       VIRTUAL_PORT: "9000"
-    command: "--admin-password '$2y$05$BJ3MUBMolVeXjt9rnrDJBOqo2/qMtXUMJPCOaUTwTieBIY5v8iYE6'"
+    command: "--admin-password '{{ generated_portainer_password.stdout }}'"

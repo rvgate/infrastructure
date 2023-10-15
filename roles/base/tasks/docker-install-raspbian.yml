@@ -14,7 +14,7 @@
 
 - name: add docker apt repository
   apt_repository:
-    repo: deb https://download.docker.com/linux/raspbian/ stretch stable
+    repo: deb https://download.docker.com/linux/raspbian/ bullseye stable
     state: present
 
 - name: install docker
@@ -24,4 +24,4 @@
 
 - name: pip packages
   apt:
-    name: python-docker
+    name: python3-docker

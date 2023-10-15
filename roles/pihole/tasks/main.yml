@@ -11,7 +11,7 @@
       - "pihole-dnsmasq:/etc/dnsmasq.d"
       - "pihole-etc:/etc/pihole"
     env:
-      WEBPASSWORD: "{{ PIHOLE_WEBPASSWORD }}"
+      WEBPASSWORD: "{{ pihole_password }}"
       DNS1: "8.8.8.8"
       DNS2: "8.8.4.4"
       ServerIP: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"

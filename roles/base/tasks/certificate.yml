@@ -1,84 +1,55 @@
 ---
-- name: install certbot snap
-  snap:
-    classic: yes
-    name:
-      - certbot
-
-- name: trust certbot plugin snap
-  ansible.builtin.command:
-    cmd: snap set certbot trust-plugin-with-root=ok
-    creates: /snap/.snap_certbut_trusted
-  register: certbot_trust
-
-- name: write certbot trusted file
-  copy:
-    content: ""
-    dest: /snap/.snap_certbut_trusted
-  when: certbot_trust.changed
-
-- name: install certbot-dns-route53 snap
-  snap:
-    classic: yes
-    name:
-      - certbot-dns-route53
-
-- name: symlink certbot
-  file:
-    src: "/snap/bin/certbot"
-    dest: "/usr/bin/certbot"
-    state: link
-    force: yes
-
 - name: create letsencrypt directory
   file:
     path: /etc/letsencrypt
     state: directory
     mode: 0700
 
-- name: create aws credentials directory
-  file:
-    path: /root/.aws
-    state: directory
-    mode: 0700
+- name: copy letsencrypt config
+  template:
+    src: letsencrypt.ini
+    dest: /etc/letsencrypt/cli.ini
 
-- name: copy aws credentials
-  copy:
-    src: aws-credentials.ini
-    dest: /root/.aws/credentials
+- name: run certbot
+  ansible.builtin.command:
+    cmd: >
+      docker run --interactive=true --tty=true --rm --name certbot
+        --volume "/etc/letsencrypt:/etc/letsencrypt"
+        --volume "/var/lib/letsencrypt:/var/lib/letsencrypt"
+        --env aws_access_key_id="{{ aws_access_key_id }}"
+        --env aws_secret_access_key="{{ aws_secret_access_key }}"
+        certbot/dns-route53 certonly
+        --cert-name {{ item }}
+        --domains {{ item }},*.{{ item }}
+        --email info@{{ item }}
+    creates: /etc/letsencrypt/live/{{ item }}
+  with_items: "{{ domains }}"
+
+- name: setup certbot cronjob
+  cron:
+    name: certbot renew
+    special_time: weekly
+    job: /usr/bin/docker run --interactive=true --tty=true --rm --name certbot-renew --volume "/etc/letsencrypt:/etc/letsencrypt" --volume "/var/lib/letsencrypt:/var/lib/letsencrypt" --env aws_access_key_id="{{ aws_access_key_id }}" --env aws_secret_access_key="{{ aws_secret_access_key }}" certbot/dns-route53 renew
+    state: present
 
 - name: create nginx certificates location
   file:
-    path: /etc/letsencrypt/live/nginx
+    path: /etc/nginx/certs
     state: directory
     mode: 0700
-
-- name: request first wildcard certificate
-  command: "/usr/bin/certbot certonly --cert-name {{ item }} --dns-route53 -d {{ item }},*.{{ item }} --preferred-challenges dns-01 --non-interactive --agree-tos -m info@{{ item }}"
-  args:
-    creates: "/etc/letsencrypt/live/{{ item }}/privkey.pem"
-  with_items: "{{ DOMAINS }}"
 
 - name: link certificate fullchain to crt
   file:
     src: "/etc/letsencrypt/live/{{ item }}/fullchain.pem"
-    dest: "/etc/letsencrypt/live/nginx/{{ item }}.crt"
+    dest: "/etc/nginx/certs/{{ item }}.crt"
     state: link
     force: yes
-  with_items: "{{ DOMAINS }}"
+  with_items: "{{ domains }}"
 
 - name: link certificate privkey to key
   file:
     src: "/etc/letsencrypt/live/{{ item }}/privkey.pem"
-    dest: "/etc/letsencrypt/live/nginx/{{ item }}.key"
+    dest: "/etc/nginx/certs/{{ item }}.key"
     state: link
     force: yes
-  with_items: "{{ DOMAINS }}"
-
-- name: setup certbot cronjob
-  cron:
-    name: "certbot {{ item }}"
-    special_time: weekly
-    job: "/usr/bin/certbot certonly --cert-name {{ item }} --dns-route53 -d {{ item }},*.{{ item }} --preferred-challenges dns-01 --non-interactive --agree-tos -m info@{{ item }} > /dev/null"
-    state: present
-  with_items: "{{ DOMAINS }}"
+  with_items: "{{ domains }}"

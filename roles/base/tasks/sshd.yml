@@ -5,5 +5,5 @@
     state: present
     key: '{{ item }}'
   with_file:
-    - public_keys/rvgate-windows.pub
-    - public_keys/rvgate-work.pub
+    - public_keys/rvgate-desktop.pub
+    - public_keys/rvgate-laptop.pub
