@@ -56,7 +56,7 @@
     ]
     state: present
 
-- name: snap packages
+- name: snap core
   community.general.snap:
     name:
       - core
@@ -73,3 +73,8 @@
     state: link
     force: yes
   when: ansible_distribution == 'Fedora'
+
+- name: snap packages
+  community.general.snap:
+    name:
+      - btop

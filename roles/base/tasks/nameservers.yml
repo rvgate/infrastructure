@@ -11,7 +11,7 @@
     mode: 0644
 
 - name: configure nameservers
-  template:
+  copy:
     src: resolv.conf
     dest: /etc/resolv.conf
     owner: root

@@ -6,8 +6,8 @@
     mode: 0700
 
 - name: copy letsencrypt config
-  template:
-    src: letsencrypt.ini
+  copy:
+    src: letsencrypt/cli.ini
     dest: /etc/letsencrypt/cli.ini
 
 - name: run certbot
@@ -16,11 +16,12 @@
       docker run --interactive=true --tty=true --rm --name certbot
         --volume "/etc/letsencrypt:/etc/letsencrypt"
         --volume "/var/lib/letsencrypt:/var/lib/letsencrypt"
-        --env aws_access_key_id="{{ aws_access_key_id }}"
-        --env aws_secret_access_key="{{ aws_secret_access_key }}"
+        --env AWS_ACCESS_KEY_ID="{{ aws_access_key_id }}"
+        --env AWS_SECRET_ACCESS_KEY="{{ aws_secret_access_key }}"
         certbot/dns-route53 certonly
         --cert-name {{ item }}
-        --domains {{ item }},*.{{ item }}
+        --domains {{ item }}
+        --domains *.{{ item }}
         --email info@{{ item }}
     creates: /etc/letsencrypt/live/{{ item }}
   with_items: "{{ domains }}"
@@ -29,7 +30,17 @@
   cron:
     name: certbot renew
     special_time: weekly
-    job: /usr/bin/docker run --interactive=true --tty=true --rm --name certbot-renew --volume "/etc/letsencrypt:/etc/letsencrypt" --volume "/var/lib/letsencrypt:/var/lib/letsencrypt" --env aws_access_key_id="{{ aws_access_key_id }}" --env aws_secret_access_key="{{ aws_secret_access_key }}" certbot/dns-route53 renew
+    job: >
+      /usr/bin/docker run
+      --interactive=true 
+      --tty=true 
+      --rm 
+      --name certbot-renew 
+      --volume "/etc/letsencrypt:/etc/letsencrypt" 
+      --volume "/var/lib/letsencrypt:/var/lib/letsencrypt" 
+      --env AWS_ACCESS_KEY_ID="{{ aws_access_key_id }}" 
+      --env AWS_SECRET_ACCESS_KEY="{{ aws_secret_access_key }}"
+      certbot/dns-route53 renew
     state: present
 
 - name: create nginx certificates location

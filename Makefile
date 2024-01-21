@@ -15,9 +15,9 @@ venv:
 	./venv/bin/pip install -r requirements.txt
 
 decrypt:
-	ansible-vault decrypt inventory/group_vars/all.yml
-	ansible-vault decrypt inventory/hosts
+	ansible-vault decrypt group_vars/*
+	ansible-vault decrypt inventory.yml
 
 encrypt:
-	ansible-vault encrypt inventory/group_vars/all.yml
-	ansible-vault encrypt inventory/hosts
+	ansible-vault encrypt group_vars/*
+	ansible-vault encrypt inventory.yml

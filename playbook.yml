@@ -3,10 +3,11 @@
   roles:
     - base
 
-- hosts: servers
+- hosts: fedora
   roles:
     - cicd
 
 - hosts: raspberry
   roles:
     - pihole
+    - irc

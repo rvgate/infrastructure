@@ -4,6 +4,7 @@
     name: default
     image: nginx
     state: started
+    restart_policy: always
     env:
       VIRTUAL_HOST: "{{ domain }}"
 
@@ -22,9 +23,11 @@
       - /etc/nginx/certs:/etc/nginx/certs
     env:
       DEFAULT_HOST: "{{ domain }}"
+    labels:
+      filebeat: "enabled"
 
-- name: restart ingest container weekly
+- name: reload ingest container daily
   cron:
-    name: restart ingest to reload certificates
-    special_time: weekly
-    job: /usr/bin/docker restart ingest > /dev/null
+    name: reload ingest nginx for certificates
+    special_time: daily
+    job: /usr/bin/docker exec -it ingest nginx -s reload > /dev/null

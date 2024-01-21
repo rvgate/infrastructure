@@ -1,0 +1,13 @@
+---
+- name: run thelounge container
+  tags: irc
+  docker_container:
+    name: irc
+    image: ghcr.io/thelounge/thelounge:latest
+    state: started
+    restart_policy: always
+    volumes:
+      - "/var/opt/thelounge:/var/opt/thelounge"
+    env:
+      VIRTUAL_PORT: "9000"
+      VIRTUAL_HOST: "irc.{{ domain }}"
