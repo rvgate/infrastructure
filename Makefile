@@ -1,23 +1,22 @@
 default: venv
-	./venv/bin/ansible-playbook playbook.yml
+	poetry run ansible-playbook playbook.yml
 
 test: venv
-	./venv/bin/ansible-playbook playbook.yml --check --diff
+	poetry run ansible-playbook playbook.yml --check --diff
 
 raspberry: venv
-	./venv/bin/ansible-playbook playbook.yml -l raspberry
+	poetry run ansible-playbook playbook.yml -l raspberry
 
 fedora: venv
-	./venv/bin/ansible-playbook playbook.yml -l fedora
+	poetry run ansible-playbook playbook.yml -l fedora
 
 venv:
-	virtualenv venv -p python3.9
-	./venv/bin/pip install -r requirements.txt
+	poetry install
 
 decrypt:
-	ansible-vault decrypt group_vars/*
-	ansible-vault decrypt inventory.yml
+	poetry run ansible-vault decrypt group_vars/*
+	poetry run ansible-vault decrypt inventory.yml
 
 encrypt:
-	ansible-vault encrypt group_vars/*
-	ansible-vault encrypt inventory.yml
+	poetry run ansible-vault encrypt group_vars/*
+	poetry run ansible-vault encrypt inventory.yml
