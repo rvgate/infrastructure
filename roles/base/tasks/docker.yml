@@ -39,3 +39,5 @@
       VIRTUAL_HOST: "portainer.{{ domain }}"
       VIRTUAL_PORT: "9000"
     command: "--admin-password '{{ generated_portainer_password.stdout }}'"
+    labels:
+      logging: enabled

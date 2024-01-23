@@ -1,0 +1,84 @@
+---
+- name: create loki docker network
+  docker_network:
+    name: loki
+
+- name: create config directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0700
+  with_items:
+    - /etc/loki
+    - /etc/promtail
+    - /var/lib/grafana
+
+- name: copy loki config
+  copy:
+    src: loki/loki-config.yml
+    dest: /etc/loki/config.yml
+  register: loki_config
+
+- name: loki
+  docker_container:
+    name: loki
+    image: grafana/loki:2.4.0
+    pull: yes
+    state: started
+    restart_policy: unless-stopped
+    command: -config.file=/etc/loki/loki-config.yaml
+    volumes:
+      - /etc/loki/config.yml:/etc/loki/loki-config.yaml
+    networks:
+      - name: loki
+  register: docker_loki
+
+- name: copy promtail config
+  copy:
+    src: loki/promtail-config.yml
+    dest: /etc/promtail/config.yaml
+  register: promtail_config
+
+- name: promtail
+  docker_container:
+    name: promtail
+    image: grafana/promtail:2.5.0
+    pull: yes
+    state: started
+    restart_policy: unless-stopped
+    command: -config.file=/etc/promtail/docker-config.yaml
+    volumes:
+      - /var/log:/var/log
+      - /var/lib/docker:/var/lib/docker
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /etc/promtail/config.yaml:/etc/promtail/docker-config.yaml
+    networks:
+      - name: loki
+  register: docker_promtail
+
+- name: grafana
+  docker_container:
+    name: grafana
+    image: grafana/grafana:latest
+    pull: yes
+    state: started
+    restart_policy: unless-stopped
+    user: 1000
+    volumes:
+      - grafana:/var/lib/grafana
+    env:
+      VIRTUAL_HOST: "grafana.{{ domain }}"
+      VIRTUAL_PORT: "3000"
+    networks:
+      - name: loki
+      - name: bridge
+    labels:
+      logging: enabled
+  register: docker_grafana
+
+- debug:
+    var: docker_loki.container.NetworkSettings.Networks.loki.IPAddress
+- debug:
+    var: docker_promtail.container.NetworkSettings.Networks.loki.IPAddress
+- debug:
+    var: docker_grafana.container.NetworkSettings.Networks.loki.IPAddress

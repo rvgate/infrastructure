@@ -13,4 +13,6 @@
       ORG_NAME: "{{ github.organisation }}"
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
+    labels:
+      logging: enabled
   loop: "{{ range(1, github.runner_count + 1) }}"

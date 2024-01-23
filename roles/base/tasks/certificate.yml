@@ -23,6 +23,7 @@
         --domains {{ item }}
         --domains *.{{ item }}
         --email info@{{ item }}
+        --labels logging=enabled
     creates: /etc/letsencrypt/live/{{ item }}
   with_items: "{{ domains }}"
 
@@ -40,6 +41,7 @@
       --volume "/var/lib/letsencrypt:/var/lib/letsencrypt" 
       --env AWS_ACCESS_KEY_ID="{{ aws_access_key_id }}" 
       --env AWS_SECRET_ACCESS_KEY="{{ aws_secret_access_key }}"
+      --label logging=enabled
       certbot/dns-route53 renew
     state: present
 
