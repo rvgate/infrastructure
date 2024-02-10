@@ -6,8 +6,9 @@
 - hosts: fedora
   roles:
     - cicd
+    - monitoring
+    - irc
 
 - hosts: raspberry
   roles:
     - pihole
-    - irc
