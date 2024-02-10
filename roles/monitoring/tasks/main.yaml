@@ -1,0 +1,7 @@
+---
+- include_tasks: network.yaml
+- include_tasks: loki.yaml
+- include_tasks: promtail.yaml
+- include_tasks: prometheus.yaml
+- include_tasks: metrics.yaml
+- include_tasks: grafana.yaml

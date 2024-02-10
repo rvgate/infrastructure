@@ -1,0 +1,4 @@
+---
+- name: create monitoring docker network
+  docker_network:
+    name: monitoring

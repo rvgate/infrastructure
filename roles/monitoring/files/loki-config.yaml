@@ -26,5 +26,8 @@ schema_config:
         prefix: index_
         period: 24h
 
+limits_config:
+  retention_period: 336h # 2 weeks
+
 ruler:
   alertmanager_url: http://localhost:9093

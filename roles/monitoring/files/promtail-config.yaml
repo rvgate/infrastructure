@@ -7,13 +7,18 @@ positions:
   filename: /tmp/positions.yaml
 
 clients:
-  - url: http://loki:3100/loki/api/v1/push
+  - url: http://monitoring-loki:3100/loki/api/v1/push
 
 scrape_configs:
 
   # local machine logs
   - job_name: local
     static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: varlogs
+          __path__: /var/log/**/*log
       - targets:
           - localhost
         labels:

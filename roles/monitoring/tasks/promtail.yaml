@@ -1,0 +1,30 @@
+---
+- name: create config directories
+  file:
+    path: /etc/promtail
+    state: directory
+    mode: 0700
+
+- name: copy promtail config
+  copy:
+    src: promtail-config.yaml
+    dest: /etc/promtail/docker-config.yaml
+
+- name: promtail
+  docker_container:
+    name: monitoring-promtail
+    image: grafana/promtail:2.5.0
+    pull: yes
+    state: started
+    restart_policy: unless-stopped
+#    privileged: true
+    command: -config.file=/etc/promtail/docker-config.yaml
+    volumes:
+      - /var/log:/var/log
+      - /var/lib/docker:/var/lib/docker
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /etc/promtail/config.yaml:/etc/promtail/docker-config.yaml
+    networks:
+      - name: monitoring
+    labels:
+      logging: enabled

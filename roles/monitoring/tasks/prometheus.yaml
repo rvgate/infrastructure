@@ -1,0 +1,32 @@
+---
+- name: create config directories
+  file:
+    path: /etc/prometheus
+    state: directory
+    mode: 0700
+
+- name: copy prometheus config
+  copy:
+    src: prometheus-config.yaml
+    dest: /etc/prometheus/prometheus-config.yml
+  register: prometheus_config
+
+- name: prometheus
+  docker_container:
+    name: monitoring-prometheus
+    image: prom/prometheus:v2.45.3
+    pull: yes
+    state: started
+    restart_policy: unless-stopped
+    volumes:
+      - /etc/prometheus/prometheus-config.yml:/etc/prometheus/prometheus.yml
+    env:
+      VIRTUAL_HOST: "prometheus.{{ domain }}"
+      VIRTUAL_PORT: "9090"
+    networks:
+      - name: monitoring
+      - name: bridge # needed to connect to docker metrics
+    etc_hosts:
+      docker_host: 172.17.0.1
+    labels:
+      logging: enabled
