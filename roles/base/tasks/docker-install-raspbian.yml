@@ -19,8 +19,11 @@
 
 - name: install docker
   apt:
-    name: docker-ce
+    name: "{{ item }}"
     install_recommends: False
+  with_items:
+    - docker-ce
+    - docker-compose
 
 - name: pip packages
   apt:

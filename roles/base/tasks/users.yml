@@ -1,0 +1,17 @@
+---
+- name: user accounts
+  ansible.builtin.user:
+    name: "{{ item.name }}"
+    password: "{{ item.password_hash }}"
+    shell: /bin/bash
+    groups: "{{ item.groups }}"
+  with_items: "{{ users }}"
+
+- name: authorized keys
+  ansible.posix.authorized_key:
+    user: "{{ item.0.name }}"
+    state: "{{ item.1.state }}"
+    key: "{{ item.1.key }}"
+  with_subelements:
+    - "{{ users }}"
+    - authorized_keys

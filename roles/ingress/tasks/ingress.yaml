@@ -1,0 +1,52 @@
+---
+- name: nginx default page
+  docker_container:
+    name: default
+    image: nginx
+    state: started
+    restart_policy: always
+    env:
+      VIRTUAL_HOST: "default"
+
+- name: create nginx custom config directory
+  file:
+    path: /etc/nginx/conf.d/
+    state: directory
+    mode: 0700
+
+- name: upload nginx custom configs
+  copy:
+    src: nginx/conf.d/
+    dest: /etc/nginx/conf.d/
+
+- name: proxy network
+  docker_network:
+    name: proxy
+
+- name: nginx ingress
+  docker_container:
+    name: ingress
+    image: nginxproxy/nginx-proxy:latest
+    state: started
+    restart_policy: always
+    networks:
+      - name: bridge
+      - name: proxy
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - /etc/nginx/certs:/etc/nginx/certs
+      - /etc/letsencrypt:/etc/letsencrypt
+      - /etc/nginx/conf.d/client_max_body_size.conf:/etc/nginx/conf.d/client_max_body_size.conf
+    env:
+      DEFAULT_HOST: "default"
+    labels:
+      logging: enabled
+
+- name: reload ingress container daily
+  cron:
+    name: reload ingress nginx for certificates
+    special_time: daily
+    job: /usr/bin/docker exec -it ingress nginx -s reload > /dev/null

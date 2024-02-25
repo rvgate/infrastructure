@@ -34,7 +34,7 @@
       GF_DASHBOARDS_JSON_ENABLED: "true"
     networks:
       - name: monitoring
-      - name: bridge
+      - name: proxy
     labels:
       logging: enabled
   register: docker_grafana

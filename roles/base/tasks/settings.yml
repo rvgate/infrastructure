@@ -1,0 +1,7 @@
+---
+- name: set open file limit
+  sysctl:
+    name: fs.file-max
+    value: -1
+    state: present
+  changed_when: false

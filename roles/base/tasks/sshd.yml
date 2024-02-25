@@ -2,8 +2,8 @@
 - name: install public keys
   authorized_key:
     user: root
-    state: present
-    key: '{{ item }}'
-  with_file:
-    - public_keys/rvgate-desktop.pub
-    - public_keys/rvgate-laptop.pub
+    state: "{{ item.1.state }}"
+    key: "{{ item.1.key }}"
+  with_subelements:
+    - "{{ administrators }}"
+    - authorized_keys

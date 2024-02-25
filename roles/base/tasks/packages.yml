@@ -53,6 +53,7 @@
       'vim',
       'virtualenv',
       'whois',
+      'zip',
     ]
     state: present
 

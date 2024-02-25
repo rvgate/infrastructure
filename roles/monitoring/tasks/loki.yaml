@@ -9,12 +9,11 @@
   copy:
     src: loki-config.yaml
     dest: /etc/loki/loki-config.yaml
-  register: loki_config
 
 - name: loki
   docker_container:
     name: monitoring-loki
-    image: grafana/loki:2.4.0
+    image: grafana/loki:latest
     pull: yes
     state: started
     restart_policy: unless-stopped

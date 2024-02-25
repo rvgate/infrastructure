@@ -14,18 +14,21 @@
   ansible.builtin.command:
     cmd: >
       docker run --interactive=true --tty=true --rm --name certbot
+        --privileged
         --volume "/etc/letsencrypt:/etc/letsencrypt"
         --volume "/var/lib/letsencrypt:/var/lib/letsencrypt"
         --env AWS_ACCESS_KEY_ID="{{ aws_access_key_id }}"
         --env AWS_SECRET_ACCESS_KEY="{{ aws_secret_access_key }}"
+        --label logging=enabled
         certbot/dns-route53 certonly
         --cert-name {{ item }}
         --domains {{ item }}
         --domains *.{{ item }}
         --email info@{{ item }}
-        --labels logging=enabled
     creates: /etc/letsencrypt/live/{{ item }}
   with_items: "{{ domains }}"
+  throttle: 1
+  ignore_errors: true
 
 - name: setup certbot cronjob
   cron:
