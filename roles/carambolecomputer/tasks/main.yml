@@ -1,0 +1,32 @@
+---
+- name: checkout
+  git:
+    repo: git@github.com:carambolecomputer/carambolecomputer-api.git
+    dest: /root/carambolecomputer-api
+    update: yes
+    version: main
+  register: checkout
+
+- name: build
+  docker_image:
+    name: carambolecomputer-api
+    build:
+      path: /root/carambolecomputer-api
+    source: build
+    force_source: true
+    state: present
+  when: checkout.changed
+  register: build
+
+- name: copy config
+  template:
+    src: api.env
+    dest: /root/carambolecomputer-api/.env.docker
+
+- name: compose up
+  docker_compose:
+    project_name: carambolecomputer
+    project_src: /root/carambolecomputer-api
+    files:
+      - docker-compose.yaml
+  when: build.changed
