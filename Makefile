@@ -10,6 +10,9 @@ raspberry: venv
 fedora: venv
 	poetry run ansible-playbook playbook.yml -l fedora
 
+carambolecomputer: venv
+	poetry run ansible-playbook carambolecomputer.yml -l fedora
+
 venv:
 	poetry install
 

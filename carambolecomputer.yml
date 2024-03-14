@@ -1,0 +1,4 @@
+---
+- hosts: fedora
+  roles:
+    - carambolecomputer
