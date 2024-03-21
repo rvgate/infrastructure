@@ -1,12 +1,28 @@
 ---
+- name: Create nginx html directory
+  ansible.builtin.file:
+    path: /usr/share/nginx/html/
+    state: directory
+    mode: "0700"
+
+- name: Default index.html
+  ansible.builtin.copy:
+    src: nginx/default.index.html
+    dest: /usr/share/nginx/html/index.html
+    mode: "0644"
+
 - name: nginx default page
   docker_container:
     name: default
     image: nginx
     state: started
     restart_policy: always
+    volumes:
+      - /usr/share/nginx/html/index.html:/usr/share/nginx/html/index.html
+    networks:
+      - name: proxy
     env:
-      VIRTUAL_HOST: "default"
+      VIRTUAL_HOST: "default.{{ domain }}"
 
 - name: create nginx custom config directory
   file:
@@ -41,7 +57,7 @@
       - /etc/letsencrypt:/etc/letsencrypt
       - /etc/nginx/conf.d/client_max_body_size.conf:/etc/nginx/conf.d/client_max_body_size.conf
     env:
-      DEFAULT_HOST: "default"
+      DEFAULT_HOST: "default.{{ domain }}"
     labels:
       logging: enabled
 
