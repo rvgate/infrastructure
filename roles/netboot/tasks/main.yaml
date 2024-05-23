@@ -1,0 +1,31 @@
+---
+- name: checkout
+  git:
+    repo: https://github.com/netbootxyz/docker-netbootxyz.git
+    dest: /root/docker_projects/docker-netbootxyz
+    update: yes
+    version: master
+  register: checkout
+
+- name: build
+  docker_image:
+    name: netbootxyz
+    build:
+      path: /root/docker_projects/docker-netbootxyz
+    source: build
+    force_source: true
+    state: present
+  when: checkout.changed
+  register: build
+
+- name: run netbootxyz container
+  docker_container:
+    name: netboot
+    image: netbootxyz
+    state: started
+    ports:
+      - "69:69/udp"
+    env:
+      VIRTUAL_PORT: "3000"
+      VIRTUAL_HOST: "netboot.{{ domain }}"
+  when: build.changed
