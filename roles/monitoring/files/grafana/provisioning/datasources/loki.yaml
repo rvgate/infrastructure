@@ -5,6 +5,6 @@ datasources:
   - name: Loki
     type: loki
     access: proxy
-    url: http://monitoring-loki:3100
+    url: http://loki:3100
     isDefault: false
     version: 1

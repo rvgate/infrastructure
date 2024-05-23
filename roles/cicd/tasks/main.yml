@@ -2,7 +2,7 @@
 - name: run github runner container
   docker_container:
     name: "github-runner-{{ item }}"
-    image: myoung34/github-runner:latest
+    image: myoung34/github-runner:2.315.0
     state: started
     restart_policy: always
     env:

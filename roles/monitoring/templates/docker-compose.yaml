@@ -1,0 +1,68 @@
+---
+version: '3'
+
+services:
+  loki:
+    image: grafana/loki:latest
+    volumes:
+      - /etc/loki/loki-config.yaml:/etc/loki/loki-config.yaml
+    networks:
+      - monitoring
+    command: ["-config.file=/etc/loki/loki-config.yaml"]
+
+  promtail:
+    image: grafana/promtail:latest
+    volumes:
+      - /var/log:/var/log
+      - /var/lib/docker:/var/lib/docker
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /etc/promtail/config.yml:/etc/promtail/config.yml
+    networks:
+      - monitoring
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - /etc/prometheus/prometheus-config.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - monitoring
+    extra_hosts:
+       - "docker_host:172.17.0.1"
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    networks:
+      - monitoring
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    privileged: true
+    networks:
+      - monitoring
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+      - /etc/machine-id:/etc/machine-id:ro
+
+  grafana:
+    image: grafana/grafana:latest
+    user: "0"
+    volumes:
+      - /var/lib/grafana:/var/lib/grafana
+      - /etc/grafana/provisioning:/etc/grafana/provisioning
+    environment:
+      - VIRTUAL_HOST=grafana.{{ domain }}
+      - VIRTUAL_PORT=3000
+      - GF_SECURITY_ADMIN_PASSWORD={{ grafana_password }}
+      - GF_DASHBOARDS_JSON_ENABLED=true
+    networks:
+      - monitoring
+      - proxy
+
+networks:
+  monitoring:
+  proxy:
+    external: true

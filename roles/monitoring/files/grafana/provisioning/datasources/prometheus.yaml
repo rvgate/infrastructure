@@ -5,7 +5,7 @@ datasources:
   - name: Prometheus
     type: prometheus
     access: proxy
-    url: http://monitoring-prometheus:9090
+    url: http://prometheus:9090
     jsonData:
       tlsSkipVerify: true
     isDefault: false
