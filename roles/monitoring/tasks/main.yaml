@@ -1,3 +1,35 @@
 ---
-- include_tasks: configs.yaml
-- include_tasks: stack.yaml
+- name: create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0700
+  with_items:
+    - /root/docker_projects/monitoring/
+    - /etc/grafana/provisioning/
+    - /etc/loki
+    - /etc/prometheus
+    - /etc/promtail
+    - /var/lib/grafana/
+
+- name: copy configs
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  with_items:
+    - { src: loki-config.yaml, dest: /etc/loki/loki-config.yaml }
+    - { src: promtail-config.yaml, dest: /etc/promtail/config.yml }
+    - { src: prometheus-config.yaml, dest: /etc/prometheus/prometheus-config.yml }
+    - { src: grafana/provisioning/, dest: /etc/grafana/provisioning/ }
+
+- name: copy docker-compose
+  template:
+    src: docker-compose.yaml
+    dest: /root/docker_projects/monitoring/docker-compose.yaml
+
+- name: compose up
+  docker_compose:
+    project_name: monitoring
+    project_src: /root/docker_projects/monitoring
+    files:
+      - docker-compose.yaml

@@ -2,7 +2,7 @@
 - name: run pihole container
   docker_container:
     name: dns-sinkhole
-    image: pihole/pihole:latest
+    image: pihole/pihole
     state: started
     restart_policy: always
     pull: yes

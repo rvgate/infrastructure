@@ -10,13 +10,18 @@
     src: nginx/default.index.html
     dest: /usr/share/nginx/html/index.html
     mode: "0644"
+  register: default_page
+
+- name: proxy network
+  docker_network:
+    name: proxy
 
 - name: nginx default page
   docker_container:
     name: default
     image: nginx
     state: started
-    restart_policy: always
+    restart: "{{ default_page.changed | default(false) }}"
     volumes:
       - /usr/share/nginx/html/index.html:/usr/share/nginx/html/index.html
     networks:
@@ -34,10 +39,6 @@
   copy:
     src: nginx/conf.d/
     dest: /etc/nginx/conf.d/
-
-- name: proxy network
-  docker_network:
-    name: proxy
 
 - name: nginx ingress
   docker_container:

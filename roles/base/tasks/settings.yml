@@ -1,7 +1,16 @@
 ---
-#- name: set open file limit
-#  sysctl:
-#    name: fs.file-max
-#    value: -1
-#    state: present
-#  changed_when: false
+- name: set open file limit (fedora)
+  sysctl:
+    name: fs.file-max
+    value: -1
+    state: present
+  changed_when: false
+  when: ansible_distribution == 'Fedora'
+
+- name: set open file limit (raspberry)
+  pam_limits:
+    domain: "*"
+    limit_type: "-"
+    limit_item: nofile
+    value: 65536
+  when: inventory_hostname in groups.raspberry
