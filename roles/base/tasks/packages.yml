@@ -1,60 +1,57 @@
 ---
 - name: install Fedora specific packages
   dnf:
-    name: [
-      'crontabs',
-      'dnf-plugins-core',
-      'fuse',
-      'httpd-tools',
-      'kernel-modules',
-      'python',
-      'python-pip',
-      'squashfuse',
-    ]
+    name:
+      - crontabs
+      - dnf-plugins-core
+      - fuse
+      - httpd-tools
+      - kernel-modules
+      - python
+      - python-pip
+      - squashfuse
   when: ansible_distribution == 'Fedora'
 
 - name: install Raspbian specific packages
   apt:
-    name: [
-      'apache2-utils',
-      'cron',
-      'dnsutils',
-    ]
+    name:
+      - apache2-utils
+      - cron
+      - dnsutils
   when: ansible_distribution == 'Debian'
 
 - name: install Ubuntu/Debian specific packages
   apt:
-    name: [
-      'python3',
-      'python3-pip',
-    ]
+    name:
+      - python3
+      - python3-pip
   when: ansible_distribution == 'Ubuntu' or ansible_distribution == 'Debian'
 
 - name: system packages
   package:
-    name: [
-      'curl',
-      'git',
-      'htop',
-      'iftop',
-      'iotop',
-      'neofetch',
-      'net-tools',
-      'nload',
-      'nmap',
-      'pwgen',
-      'screen',
-      'snapd',
-      'telnet',
-      'tig',
-      'traceroute',
-      'tree',
-      'unzip',
-      'vim',
-      'virtualenv',
-      'whois',
-      'zip',
-    ]
+    name:
+      - curl
+      - git
+      - htop
+      - iftop
+      - iotop
+      - ipcalc
+      - neofetch
+      - net-tools
+      - nload
+      - nmap
+      - pwgen
+      - screen
+      - snapd
+      - telnet
+      - tig
+      - traceroute
+      - tree
+      - unzip
+      - vim
+      - virtualenv
+      - whois
+      - zip
     state: present
 
 - name: snap core

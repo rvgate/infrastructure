@@ -10,7 +10,6 @@ clients:
   - url: http://loki:3100/loki/api/v1/push
 
 scrape_configs:
-
   # local machine logs
   - job_name: local
     static_configs:
@@ -32,12 +31,12 @@ scrape_configs:
         refresh_interval: 5s
         filters:
           - name: label
-            values: ["logging=enabled"]
+            values: [logging=enabled]
     relabel_configs:
-      - source_labels: ['__meta_docker_container_name']
-        regex: '/(.*)'
-        target_label: 'container'
-      - source_labels: ['__meta_docker_container_log_stream']
-        target_label: 'logstream'
-      - source_labels: ['__meta_docker_container_label_logging_jobname']
-        target_label: 'job'
+      - source_labels: [__meta_docker_container_name]
+        regex: /(.*)
+        target_label: container
+      - source_labels: [__meta_docker_container_log_stream]
+        target_label: logstream
+      - source_labels: [__meta_docker_container_label_logging_jobname]
+        target_label: job
