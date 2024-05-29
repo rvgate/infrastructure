@@ -33,11 +33,9 @@
 - name: setup certbot cronjob
   cron:
     name: certbot renew
-    special_time: weekly
+    special_time: daily
     job: >
       /usr/bin/docker run
-      --interactive=true 
-      --tty=true 
       --rm 
       --name certbot-renew 
       --volume "/etc/letsencrypt:/etc/letsencrypt" 
@@ -46,6 +44,7 @@
       --env AWS_SECRET_ACCESS_KEY="{{ aws_secret_access_key }}"
       --label logging=enabled
       certbot/dns-route53 renew
+      > /dev/null
     state: present
 
 - name: create nginx certificates location

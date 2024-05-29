@@ -66,4 +66,4 @@
   cron:
     name: reload ingress nginx for certificates
     special_time: daily
-    job: /usr/bin/docker exec -it ingress nginx -s reload > /dev/null
+    job: /usr/bin/docker exec ingress nginx -s reload > /dev/null
