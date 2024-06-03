@@ -41,3 +41,17 @@
     command: "--admin-password '{{ generated_portainer_password.stdout }}'"
     labels:
       logging: enabled
+
+- name: run watchtower container
+  docker_container:
+    name: watchtower
+    image: containrrr/watchtower
+    pull: yes
+    state: started
+    restart_policy: always
+    env:
+      WATCHTOWER_SCHEDULE: "0 0 9 * * *" # 9 AM every day (Spring syntax)
+      WATCHTOWER_CLEANUP: "true"
+      WATCHTOWER_LABEL_ENABLE: "true"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock

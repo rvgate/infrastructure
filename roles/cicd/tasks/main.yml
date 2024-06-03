@@ -2,7 +2,7 @@
 - name: run github runner container
   docker_container:
     name: "github-runner-{{ item }}"
-    image: myoung34/github-runner:2.315.0
+    image: myoung34/github-runner:latest
     state: started
     restart_policy: always
     env:
@@ -15,4 +15,5 @@
       - /var/run/docker.sock:/tmp/docker.sock:ro
     labels:
       logging: enabled
+      com.centurylinklabs.watchtower.enable: "true"
   loop: "{{ range(1, github.runner_count + 1) }}"
