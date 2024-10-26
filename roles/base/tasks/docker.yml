@@ -29,7 +29,7 @@
 - name: run portainer container
   docker_container:
     name: portainer
-    image: portainer/portainer:latest
+    image: portainer/portainer-ce:latest
     pull: yes
     state: started
     restart_policy: always
