@@ -1,0 +1,39 @@
+---
+- name: generate password hash
+  ansible.builtin.command:
+    cmd: >  
+      docker run -it ghcr.io/wg-easy/wg-easy wgpw {{ vpn_password }}
+  register: wireguard_password_hash
+  args:
+    creates: ~/.wireguard_password_hash
+
+- name: store hash
+  ansible.builtin.copy:
+    content: "{{ wireguard_password_hash.stdout | replace(\"'\", '')}}"
+    dest: ~/.wireguard_password_hash
+  when: wireguard_password_hash.changed
+
+- name: run wireguard container
+  docker_container:
+    name: wireguard
+    image: ghcr.io/wg-easy/wg-easy
+    state: started
+    restart: "{{ wireguard_password_hash.changed }}"
+    restart_policy: unless-stopped
+    pull: yes
+    ports:
+      - "51820:51820/udp"
+    volumes:
+      - "wireguard:/etc/wireguard"
+    env_file: "/root/.wireguard_password_hash"
+    env:
+      WG_HOST: "vpn.{{ domain }}"
+      VIRTUAL_HOST: "vpn.{{ domain }}"
+      VIRTUAL_PORT: "51821"
+      NETWORK_ACCESS: "internal"
+    capabilities:
+      - "NET_ADMIN"
+      - "SYS_MODULE"
+    sysctls:
+      net.ipv4.conf.all.src_valid_mark: 1
+      net.ipv4.ip_forward: 1

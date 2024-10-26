@@ -10,6 +10,7 @@
     - monitoring
     - irc
     - carambolecomputer
+    - vpn
 
 - hosts: raspberry
   roles:

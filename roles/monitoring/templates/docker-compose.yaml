@@ -58,6 +58,7 @@ services:
       - VIRTUAL_PORT=3000
       - GF_SECURITY_ADMIN_PASSWORD={{ grafana_password }}
       - GF_DASHBOARDS_JSON_ENABLED=true
+      - NETWORK_ACCESS=internal
     networks:
       - monitoring
       - proxy
