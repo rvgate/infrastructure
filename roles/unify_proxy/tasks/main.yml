@@ -1,0 +1,27 @@
+---
+- name: make dir
+  ansible.builtin.file:
+      path: /root/docker_projects/unify_proxy
+      state: directory
+      mode: 0700
+
+- name: copy config
+  ansible.builtin.template:
+    src: nginx.conf
+    dest: /root/docker_projects/unify_proxy/default.conf
+    mode: 0644
+  register: unify_config
+
+- name: run unify-proxy container
+  docker_container:
+    name: unify-proxy
+    image: nginx
+    state: started
+    restart_policy: always
+    networks:
+      - name: proxy
+    volumes:
+      - /root/docker_projects/unify_proxy/default.conf:/etc/nginx/conf.d/default.conf
+    env:
+      VIRTUAL_HOST: "unify.{{ domain }}"
+      VIRTUAL_PORT: "80"
