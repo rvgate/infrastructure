@@ -40,6 +40,12 @@
     src: nginx/conf.d/
     dest: /etc/nginx/conf.d/
 
+- name: nginx network_internal.conf
+  ansible.builtin.template:
+    src: network_internal.conf
+    dest: /etc/nginx/network_internal.conf
+    mode: "0644"
+
 - name: nginx ingress
   docker_container:
     name: ingress
@@ -57,6 +63,8 @@
       - /etc/nginx/certs:/etc/nginx/certs
       - /etc/letsencrypt:/etc/letsencrypt
       - /etc/nginx/conf.d/client_max_body_size.conf:/etc/nginx/conf.d/client_max_body_size.conf
+      - /etc/nginx/conf.d/server_tokens.conf:/etc/nginx/conf.d/server_tokens.conf
+      - /etc/nginx/network_internal.conf:/etc/nginx/network_internal.conf
     env:
       DEFAULT_HOST: "default.{{ domain }}"
     labels:
