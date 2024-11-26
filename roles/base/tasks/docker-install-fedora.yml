@@ -12,7 +12,8 @@
       'containerd.io',
       'docker-ce',
       'docker-ce-cli',
-      'docker-compose'
+      'docker-compose',
+      'docker-compose-plugin',
     ]
 
 - name: start docker service

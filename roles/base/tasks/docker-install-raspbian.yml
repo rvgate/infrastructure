@@ -24,6 +24,7 @@
   with_items:
     - docker-ce
     - docker-compose
+    - docker-compose-plugin
 
 - name: pip packages
   apt:
