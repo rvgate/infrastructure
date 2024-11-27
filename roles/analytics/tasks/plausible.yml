@@ -1,0 +1,13 @@
+---
+- name: Pull Docker images for analytics
+  ansible.builtin.shell: docker compose -f /opt/cognicode/plausible.yml pull
+
+- name: Pull Docker images for nginx
+  ansible.builtin.shell: docker compose -f /opt/cognicode/nginx.yml pull
+
+- name: Start all Docker containers
+  ansible.builtin.shell: |
+    docker compose -f /opt/cognicode/plausible.yml up -d
+    sleep 10
+    docker compose -f /opt/cognicode/nginx.yml up -d
+    docker compose -f /opt/cognicode/nginx.yml restart
