@@ -4,7 +4,7 @@
     repo: git@github.com:carambolecomputer/carambolecomputer-api.git
     dest: /root/docker_projects/carambolecomputer-api
     update: yes
-    version: main
+    version: live
   register: checkout
 
 - name: build
