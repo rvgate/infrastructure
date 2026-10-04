@@ -7,15 +7,31 @@
       'software-properties-common',
     ]
 
-- name: add apt-key
-  apt_key:
-    url: https://download.docker.com/linux/ubuntu/gpg
-    state: present
-
-- name: add docker apt repository
+- name: remove legacy docker apt repository
   apt_repository:
     repo: deb https://download.docker.com/linux/ubuntu/ jammy stable
+    state: absent
+
+- name: remove legacy docker apt-key
+  apt_key:
+    id: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
+    state: absent
+
+- name: add docker apt repository
+  ansible.builtin.deb822_repository:
+    name: docker
+    types: deb
+    uris: https://download.docker.com/linux/ubuntu
+    suites: "{{ ansible_distribution_release }}"
+    components: stable
+    signed_by: https://download.docker.com/linux/ubuntu/gpg
     state: present
+  register: docker_repository
+
+- name: update apt cache
+  apt:
+    update_cache: true
+  when: docker_repository.changed
 
 - name: install docker
   apt:
