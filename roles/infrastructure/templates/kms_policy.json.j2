@@ -1,0 +1,46 @@
+{
+  "Version": "2012-10-17",
+  "Id": "DNSSECKeyPolicy",
+  "Statement": [
+    {
+      "Sid": "EnableRootAccountAccess",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::240849438537:user/rvgate_aws_cli_user"
+      },
+      "Action": "kms:*",
+      "Resource": "*"
+    },
+    {
+      "Sid": "EnableRootAccountAccess",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::240849438537:root"
+      },
+      "Action": "kms:*",
+      "Resource": "*"
+    },
+    {
+      "Sid": "AllowIAMRoleAccess",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::240849438537:role/AdminRole"
+      },
+      "Action": "kms:*",
+      "Resource": "*"
+    },
+    {
+      "Sid": "AllowRoute53AccessToDNSSECKey",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "dnssec-route53.amazonaws.com"
+      },
+      "Action": [
+        "kms:Sign",
+        "kms:GetPublicKey",
+        "kms:DescribeKey"
+      ],
+      "Resource": "*"
+    }
+  ]
+}

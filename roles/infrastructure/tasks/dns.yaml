@@ -1,0 +1,43 @@
+---
+- name: Create a KMS key
+  amazon.aws.kms_key:
+    access_key: "{{ aws_access_key_id }}"
+    aws_secret_access_key: "{{ aws_secret_access_key }}"
+    alias: "brainfire-nl-kms-route53"
+    policy: "{{ lookup('template', 'kms_policy.json.j2') }}"
+    region: "us-east-1"
+    state: absent
+    enabled: true
+    customer_master_key_spec: "ECC_NIST_P256"
+    key_usage: "SIGN_VERIFY"
+  register: kms_key
+
+- name: Create a Route53 public zone
+  amazon.aws.route53_zone:
+    access_key: "{{ aws_access_key_id }}"
+    aws_secret_access_key: "{{ aws_secret_access_key }}"
+    zone: "brainfire.nl"
+    comment: "Route53 Zone for KSK Testing"
+    state: present
+  register: _hosted_zone
+
+- name: Create a Key Signing Key request
+  amazon.aws.route53_ksk:
+    access_key: "{{ aws_access_key_id }}"
+    aws_secret_access_key: "{{ aws_secret_access_key }}"
+    name: "brainfire-nl-ksk"
+    hosted_zone_id: "{{ _hosted_zone.zone_id }}"
+    key_management_service_arn: "{{ kms_key.key_arn }}"
+    caller_reference: "brainfire-nl-unique-request"
+    status: "ACTIVE"
+    state: present
+  register: _ksk_request
+
+#- name: Enable DNSSEC for Route53 public zone
+#  amazon.aws.route53_zone:
+#    access_key: "{{ aws_access_key_id }}"
+#    aws_secret_access_key: "{{ aws_secret_access_key }}"
+#    zone: "brainfire.nl"
+#    state: present
+#    dnssec: true
+#  register: _hosted_zone_dnssec

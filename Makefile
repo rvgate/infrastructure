@@ -16,6 +16,9 @@ factorio: venv
 carambolecomputer: venv
 	poetry run ansible-playbook carambolecomputer.yml -l fedora
 
+dns: venv
+	poetry run ansible-playbook dns.yml -l localhost
+
 venv:
 	poetry install
 

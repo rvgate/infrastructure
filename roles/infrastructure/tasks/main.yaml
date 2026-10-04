@@ -1,0 +1,3 @@
+---
+- name: Include dns.yaml
+  ansible.builtin.include_tasks: dns.yaml
