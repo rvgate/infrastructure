@@ -10,7 +10,7 @@
       - python
       - python-pip
       - squashfuse
-  when: ansible_distribution == 'Fedora'
+  when: ansible_facts['distribution'] == 'Fedora'
 
 - name: install Raspbian specific packages
   apt:
@@ -18,14 +18,14 @@
       - apache2-utils
       - cron
       - dnsutils
-  when: ansible_distribution == 'Debian'
+  when: ansible_facts['distribution'] == 'Debian'
 
 - name: install Ubuntu/Debian specific packages
   apt:
     name:
       - python3
       - python3-pip
-  when: ansible_distribution == 'Ubuntu' or ansible_distribution == 'Debian'
+  when: ansible_facts['distribution'] == 'Ubuntu' or ansible_facts['distribution'] == 'Debian'
 
 - name: system packages
   package:
@@ -70,7 +70,7 @@
     dest: "/snap"
     state: link
     force: yes
-  when: ansible_distribution == 'Fedora'
+  when: ansible_facts['distribution'] == 'Fedora'
 
 - name: snap packages
   community.general.snap:

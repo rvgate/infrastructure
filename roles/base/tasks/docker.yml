@@ -1,7 +1,7 @@
 ---
 - name: include Ubuntu docker based installation
   include_tasks: docker-install-ubuntu.yml
-  when: ansible_distribution == 'Ubuntu'
+  when: ansible_facts['distribution'] == 'Ubuntu'
 
 - name: include Raspbian docker based installation
   include_tasks: docker-install-raspbian.yml
@@ -9,7 +9,7 @@
 
 - name: include Fedora docker based installation
   include_tasks: docker-install-fedora.yml
-  when: ansible_distribution == 'Fedora'
+  when: ansible_facts['distribution'] == 'Fedora'
 
 - name: generate portainer password
   ansible.builtin.shell:
