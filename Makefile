@@ -10,6 +10,9 @@ raspberry: venv
 fedora: venv
 	poetry run ansible-playbook playbook.yml -l fedora
 
+factorio: venv
+	poetry run ansible-playbook playbook.yml -l factorio
+
 carambolecomputer: venv
 	poetry run ansible-playbook carambolecomputer.yml -l fedora
 
