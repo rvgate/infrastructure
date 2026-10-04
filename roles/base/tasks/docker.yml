@@ -25,6 +25,7 @@
       cmd: cat ~/.portainer_password
   register: generated_portainer_password
   changed_when: False
+  check_mode: false
 
 - name: run portainer container
   docker_container:
