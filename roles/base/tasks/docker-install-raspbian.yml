@@ -7,15 +7,26 @@
       'software-properties-common',
     ]
 
-- name: add apt-key
-  apt_key:
-    url: https://download.docker.com/linux/raspbian/gpg
-    state: present
+- name: remove legacy docker apt repository
+  file:
+    path: /etc/apt/sources.list.d/download_docker_com_linux_raspbian.list
+    state: absent
 
 - name: add docker apt repository
-  apt_repository:
-    repo: deb https://download.docker.com/linux/raspbian/ bullseye stable
+  ansible.builtin.deb822_repository:
+    name: docker
+    types: deb
+    uris: https://download.docker.com/linux/raspbian
+    suites: "{{ ansible_facts['distribution_release'] }}"
+    components: stable
+    signed_by: https://download.docker.com/linux/raspbian/gpg
     state: present
+  register: docker_repository
+
+- name: update apt cache
+  apt:
+    update_cache: true
+  when: docker_repository.changed
 
 - name: install docker
   apt:

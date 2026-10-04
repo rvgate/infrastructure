@@ -8,13 +8,8 @@
     ]
 
 - name: remove legacy docker apt repository
-  apt_repository:
-    repo: deb https://download.docker.com/linux/ubuntu/ jammy stable
-    state: absent
-
-- name: remove legacy docker apt-key
-  apt_key:
-    id: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
+  file:
+    path: /etc/apt/sources.list.d/download_docker_com_linux_ubuntu.list
     state: absent
 
 - name: add docker apt repository
