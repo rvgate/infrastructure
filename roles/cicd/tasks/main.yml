@@ -16,4 +16,4 @@
     labels:
       logging: enabled
       com.centurylinklabs.watchtower.enable: "true"
-  loop: "{{ range(1, github.runner_count + 1) }}"
+  loop: "{{ lookup('sequence', 'start=1 end=' + (github.runner_count | string)) | split(',') }}"
