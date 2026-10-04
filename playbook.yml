@@ -8,7 +8,6 @@
   roles:
     - cicd
     - monitoring
-    - irc
     - carambolecomputer
     - vpn
 
