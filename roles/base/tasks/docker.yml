@@ -27,6 +27,21 @@
   changed_when: False
   check_mode: false
 
+# Portainer used to store its data in an anonymous volume, which is lost when
+# the container is recreated. Copy it once into the named volume.
+- name: migrate portainer data to named volume
+  ansible.builtin.shell:
+    cmd: |
+      docker volume inspect portainer_data > /dev/null 2>&1 && exit 0
+      docker volume create portainer_data > /dev/null
+      if docker inspect portainer > /dev/null 2>&1; then
+        docker stop portainer > /dev/null
+        docker run --rm --volumes-from portainer -v portainer_data:/target alpine cp -a /data/. /target/
+      fi
+      echo migrated
+  register: portainer_migration
+  changed_when: "'migrated' in portainer_migration.stdout"
+
 - name: run portainer container
   docker_container:
     name: portainer
@@ -36,6 +51,7 @@
     restart_policy: always
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
     env:
       VIRTUAL_HOST: "portainer.{{ domain }}"
       VIRTUAL_PORT: "9000"
