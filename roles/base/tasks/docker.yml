@@ -51,8 +51,9 @@
     state: started
     restart_policy: always
     env:
-      WATCHTOWER_SCHEDULE: "0 0 9 * * *" # 9 AM every day (Spring syntax)
+      WATCHTOWER_SCHEDULE: "0 0 1 * * *" # 01:00 UTC every day, before the 02:00 UTC crawler jobs (Spring syntax)
       WATCHTOWER_CLEANUP: "true"
       WATCHTOWER_LABEL_ENABLE: "true"
+      WATCHTOWER_LIFECYCLE_HOOKS: "true"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock

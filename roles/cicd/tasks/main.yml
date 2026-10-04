@@ -16,4 +16,9 @@
     labels:
       logging: enabled
       com.centurylinklabs.watchtower.enable: "true"
+      # skip the update (exit 75) while the runner is executing a job
+      com.centurylinklabs.watchtower.lifecycle.pre-update: "sh -c '! grep -qa \"[R]unner.Worker\" /proc/[0-9]*/cmdline || exit 75'"
+      com.centurylinklabs.watchtower.lifecycle.pre-update-timeout: "1"
   loop: "{{ lookup('sequence', 'start=1 end=' + (github.runner_count | string)) | split(',') }}"
+
+
