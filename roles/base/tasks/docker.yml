@@ -46,7 +46,7 @@
 - name: run watchtower container
   docker_container:
     name: watchtower
-    image: containrrr/watchtower
+    image: nickfedor/watchtower:latest # containrrr/watchtower is unmaintained and incompatible with Docker 29+
     pull: yes
     state: started
     restart_policy: always
