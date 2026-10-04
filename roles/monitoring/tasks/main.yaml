@@ -1,4 +1,19 @@
 ---
+# Beszel used to store its data in an anonymous volume, which is lost when the
+# container is recreated. Copy it once into the named volume.
+- name: migrate beszel data to named volume
+  ansible.builtin.shell:
+    cmd: |
+      docker volume inspect beszel_data > /dev/null 2>&1 && exit 0
+      docker volume create beszel_data > /dev/null
+      if docker inspect beszel > /dev/null 2>&1; then
+        docker stop beszel > /dev/null
+        docker run --rm --volumes-from beszel -v beszel_data:/target alpine cp -a /beszel_data/. /target/
+      fi
+      echo migrated
+  register: beszel_migration
+  changed_when: "'migrated' in beszel_migration.stdout"
+
 - name: run henrygd/beszel:latest container
   community.docker.docker_container:
     name: beszel
@@ -6,7 +21,10 @@
     state: started
     restart_policy: unless-stopped
     detach: true
+    volumes:
+      - beszel_data:/beszel_data
     env:
       VIRTUAL_HOST: "monitor.{{ domain }}"
       VIRTUAL_PORT: "8090"
+    labels:
       com.centurylinklabs.watchtower.enable: "true"
