@@ -1,0 +1,27 @@
+---
+# live-restore keeps containers running while the docker daemon is upgraded
+# or restarted. It can be applied with a reload, so running containers are
+# not interrupted.
+- name: create docker config directory
+  file:
+    path: /etc/docker
+    state: directory
+    mode: 0755
+
+- name: docker daemon config
+  copy:
+    content: "{{ {'live-restore': true} | to_nice_json }}\n"
+    dest: /etc/docker/daemon.json
+    mode: 0644
+  register: docker_daemon_config
+
+- name: check if docker is installed
+  stat:
+    path: /usr/bin/dockerd
+  register: dockerd
+
+- name: reload docker daemon config
+  ansible.builtin.systemd_service:
+    name: docker
+    state: reloaded
+  when: docker_daemon_config.changed and dockerd.stat.exists
