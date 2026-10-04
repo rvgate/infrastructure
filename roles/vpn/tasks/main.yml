@@ -2,7 +2,7 @@
 - name: generate password hash
   ansible.builtin.command:
     cmd: >  
-      docker run -it ghcr.io/wg-easy/wg-easy wgpw {{ vpn_password }}
+      docker run --rm ghcr.io/wg-easy/wg-easy:14 wgpw {{ vpn_password }}
   register: wireguard_password_hash
   args:
     creates: ~/.wireguard_password_hash
@@ -16,7 +16,7 @@
 - name: run wireguard container
   docker_container:
     name: wireguard
-    image: ghcr.io/wg-easy/wg-easy
+    image: ghcr.io/wg-easy/wg-easy:14 # v15 changed configuration, migrate manually
     state: started
     restart: "{{ wireguard_password_hash.changed }}"
     restart_policy: unless-stopped
