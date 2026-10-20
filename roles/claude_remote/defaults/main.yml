@@ -1,0 +1,42 @@
+---
+# Required, set these in the vaulted group_vars:
+#   claude_remote_github_token: fine-grained PAT with access to the repositories below
+#   claude_remote_vnc_password: password for the VNC display (tunnel over ssh, port 5900)
+
+claude_remote_project_dir: /root/docker_projects/claude-remote
+claude_remote_data_dir: /opt/claude-remote
+claude_remote_home_dir: "{{ claude_remote_data_dir }}/home"
+claude_remote_workspace_dir: "{{ claude_remote_data_dir }}/workspace"
+
+claude_remote_uid: 1500
+claude_remote_session_name: carambolecomputer
+claude_remote_permission_mode: acceptEdits
+
+claude_remote_git_name: Claude
+claude_remote_git_email: info@rvgate.nl
+
+claude_remote_repositories:
+  - carambolecomputer/carambolecomputer-api
+  - carambolecomputer/carambolecomputer-next
+  - carambolecomputer/carambolecomputer-android
+  - carambolecomputer/carambolecomputer-jobs
+  - carambolecomputer/carambolecomputer-firebase
+  - carambolecomputer/carambolecomputer-crawler
+
+# commands that need approval (forwarded to the phone) before claude runs them
+claude_remote_permissions_ask:
+  - "Bash(git push*live*)"
+  - "Bash(git push*--tags*)"
+  - "Bash(git push*refs/tags*)"
+  - "Bash(gh workflow run*)"
+  - "Bash(gh release*)"
+  - "Bash(docker stop*)"
+  - "Bash(docker kill*)"
+  - "Bash(docker rm*)"
+  - "Bash(docker compose*down*)"
+  - "Bash(docker system prune*)"
+  - "Bash(docker volume rm*)"
+
+claude_remote_permissions_deny:
+  - "Bash(git push*--force*)"
+  - "Bash(git push*-f *)"

@@ -1,0 +1,25 @@
+services:
+  claude:
+    image: claude-remote
+    container_name: claude-remote
+    hostname: claude-remote
+    restart: unless-stopped
+    env_file: claude.env
+    shm_size: 2gb
+    # needed for chrome's sandbox
+    cap_add:
+      - SYS_ADMIN
+    group_add:
+      - "{{ claude_remote_docker_gid }}"
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    ports:
+      - 127.0.0.1:5900:5900
+    volumes:
+      - {{ claude_remote_home_dir }}:/home/claude
+      # same path as on the host, so bind mounts of sibling containers resolve
+      - {{ claude_remote_workspace_dir }}:{{ claude_remote_workspace_dir }}
+      - ./managed-settings.json:/etc/claude-code/managed-settings.json:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+      logging: enabled

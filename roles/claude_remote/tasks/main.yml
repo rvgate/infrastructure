@@ -1,0 +1,109 @@
+---
+- name: check required variables
+  assert:
+    that:
+      - claude_remote_github_token is defined
+      - claude_remote_vnc_password is defined
+    fail_msg: set claude_remote_github_token and claude_remote_vnc_password in the vaulted group_vars
+
+- name: user
+  ansible.builtin.user:
+    name: claude
+    uid: "{{ claude_remote_uid }}"
+    shell: /usr/sbin/nologin
+    create_home: false
+    home: "{{ claude_remote_home_dir }}"
+
+- name: data directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: claude
+    group: claude
+    mode: "0750"
+  loop:
+    - "{{ claude_remote_data_dir }}"
+    - "{{ claude_remote_home_dir }}"
+    - "{{ claude_remote_workspace_dir }}"
+
+- name: workspace instructions
+  template:
+    src: CLAUDE.md
+    dest: "{{ claude_remote_workspace_dir }}/CLAUDE.md"
+    owner: claude
+    group: claude
+
+- name: docker group
+  ansible.builtin.getent:
+    database: group
+    key: docker
+
+- name: project directory
+  file:
+    path: "{{ claude_remote_project_dir }}"
+    state: directory
+
+- name: copy build files
+  copy:
+    src: "{{ item }}"
+    dest: "{{ claude_remote_project_dir }}/{{ item }}"
+    mode: "{{ '0755' if item.endswith('.sh') else '0644' }}"
+  loop:
+    - Dockerfile
+    - chrome-policy.json
+    - supervisord.conf
+    - entrypoint.sh
+    - remote-control.sh
+  register: build_files
+
+- name: copy config
+  template:
+    src: "{{ item }}"
+    dest: "{{ claude_remote_project_dir }}/{{ item }}"
+    mode: "{{ '0600' if item == 'claude.env' else '0644' }}"
+  loop:
+    - docker-compose.yaml
+    - claude.env
+    - managed-settings.json
+  vars:
+    claude_remote_docker_gid: "{{ ansible_facts.getent_group.docker[1] }}"
+  register: config
+
+- name: build
+  docker_image:
+    name: claude-remote
+    build:
+      path: "{{ claude_remote_project_dir }}"
+      args:
+        CLAUDE_UID: "{{ claude_remote_uid }}"
+    source: build
+    force_source: "{{ build_files.changed }}"
+    state: present
+  register: build
+
+- name: compose up
+  community.docker.docker_compose_v2:
+    project_name: claude-remote
+    project_src: "{{ claude_remote_project_dir }}"
+    files:
+      - docker-compose.yaml
+    recreate: "{{ 'always' if build.changed or config.changed else 'auto' }}"
+
+- name: login status
+  command: docker exec claude-remote claude auth status --json
+  register: auth_status
+  changed_when: false
+  failed_when: false
+  retries: 10
+  delay: 15
+  until: auth_status.rc == 0 or 'loggedIn' in auth_status.stdout
+
+- name: login instructions
+  debug:
+    msg:
+      - "claude is not logged in yet. One-time setup:"
+      - "1. docker exec -it claude-remote claude auth login"
+      - "2. docker exec -it claude-remote tmux attach -t remote-control  (trust workspace, enable remote control, detach with ctrl-b d)"
+      - "3. ssh -L 5900:localhost:5900 {{ ansible_host }}, open vnc://localhost:5900 and sign in to the Claude extension in Chrome"
+      - "4. docker exec claude-remote supervisorctl -c /etc/supervisor/claude.conf restart chrome"
+  when: not ((auth_status.stdout or '{}') | from_json).loggedIn | default(false)

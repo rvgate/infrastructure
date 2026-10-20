@@ -1,0 +1,7 @@
+{{ {
+  "permissions": {
+    "ask": claude_remote_permissions_ask,
+    "deny": claude_remote_permissions_deny,
+    "disableBypassPermissionsMode": "disable"
+  }
+} | to_nice_json }}
