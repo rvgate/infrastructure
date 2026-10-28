@@ -1,27 +1,21 @@
 ---
 - name: Add docker repository
-  command:
-    cmd: dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
-    warn: false
+  ansible.builtin.command:
+    cmd: dnf config-manager addrepo --from-repofile=https://download.docker.com/linux/fedora/docker-ce.repo
   args:
     creates: /etc/yum.repos.d/docker-ce.repo
 
-- name: install docker
-  package:
-    name: [
-      'containerd.io',
-      'docker-ce',
-      'docker-ce-cli',
-      'docker-compose',
-      'docker-compose-plugin',
-    ]
+- name: Install docker
+  ansible.builtin.package:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
 
-- name: start docker service
+- name: Start docker service
   ansible.builtin.service:
     name: docker
-    enabled: yes
+    enabled: true
     state: started
-
-- name: pip packages
-  pip:
-    name: docker

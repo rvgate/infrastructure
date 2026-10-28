@@ -2,9 +2,8 @@
 - name: set open file limit (fedora)
   sysctl:
     name: fs.file-max
-    value: -1
+    value: "9223372036854775807"
     state: present
-  changed_when: false
   when: ansible_facts['distribution'] == 'Fedora'
 
 - name: set open file limit (raspberry)

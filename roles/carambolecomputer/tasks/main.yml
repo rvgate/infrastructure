@@ -1,10 +1,18 @@
 ---
+- name: deploy key
+  copy:
+    content: "{{ carambolecomputer.deploy_key.private }}"
+    dest: /root/.ssh/carambolecomputer_deploy_key
+    mode: '0600'
+
 - name: checkout
   git:
     repo: git@github.com:carambolecomputer/carambolecomputer-api.git
     dest: /root/docker_projects/carambolecomputer-api
     update: yes
     version: live
+    accept_hostkey: yes
+    key_file: /root/.ssh/carambolecomputer_deploy_key
   register: checkout
 
 - name: build

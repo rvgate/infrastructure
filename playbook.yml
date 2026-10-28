@@ -8,8 +8,6 @@
   roles:
     - cicd
     - monitoring
-    - carambolecomputer
-    - claude_remote
     - vpn
 
 - hosts: raspberry
