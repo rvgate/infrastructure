@@ -1,11 +1,18 @@
 ---
+- name: install sudo
+  ansible.builtin.package:
+    name: sudo
+    state: present
+
 - name: user accounts
   ansible.builtin.user:
     name: "{{ item.name }}"
     password: "{{ item.password_hash }}"
     shell: /bin/bash
-    groups: "{{ item.groups }}"
+    groups: "{{ item.groups + ([sudo_group] if item.sudo | default(false) else []) }}"
   with_items: "{{ users }}"
+  vars:
+    sudo_group: "{{ {'RedHat': 'wheel', 'Debian': 'sudo'}[ansible_facts['os_family']] }}"
 
 - name: authorized keys
   ansible.posix.authorized_key:
