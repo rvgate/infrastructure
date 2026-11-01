@@ -16,6 +16,9 @@ factorio: venv
 carambolecomputer: venv
 	poetry run ansible-playbook carambolecomputer.yml -l fedora
 
+rvgate: venv
+	poetry run ansible-playbook rvgate.yml -l fedora
+
 claude-remote: venv
 	poetry run ansible-playbook claude_remote.yml -l fedora
 

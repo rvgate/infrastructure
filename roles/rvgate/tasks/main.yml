@@ -1,0 +1,29 @@
+---
+# rvgate/rvgate.nl is a public repository, so no deploy key is needed
+
+- name: checkout
+  git:
+    repo: https://github.com/rvgate/rvgate.nl.git
+    dest: /root/docker_projects/rvgate.nl
+    update: yes
+    version: live
+  register: checkout
+
+- name: build
+  docker_image:
+    name: rvgate-nl
+    build:
+      path: /root/docker_projects/rvgate.nl
+    source: build
+    force_source: true
+    state: present
+  when: checkout.changed
+  register: build
+
+- name: compose up
+  community.docker.docker_compose_v2:
+    project_name: rvgate
+    project_src: /root/docker_projects/rvgate.nl
+    files:
+      - docker-compose.yaml
+  when: build.changed
