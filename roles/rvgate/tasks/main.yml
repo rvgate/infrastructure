@@ -9,21 +9,28 @@
     version: live
   register: checkout
 
-- name: build
-  docker_image:
-    name: rvgate-nl
-    build:
-      path: /root/docker_projects/rvgate.nl
-    source: build
-    force_source: true
-    state: present
-  when: checkout.changed
-  register: build
+- name: check contact form settings
+  assert:
+    that:
+      - rvgate.smtp.password is defined
+      - rvgate.smtp.password not in ['', 'CHANGE_ME']
+    fail_msg: Set rvgate.smtp.password in group_vars/all.yml (vault) first
+    quiet: true
 
+# SMTP settings for the contact form, from `rvgate` in the vault
+- name: copy config
+  template:
+    src: rvgate.env
+    dest: /root/docker_projects/rvgate.nl/.env
+    mode: "0600"
+  register: config
+
+# builds the site (web) and the contact form backend (contact)
 - name: compose up
   community.docker.docker_compose_v2:
     project_name: rvgate
     project_src: /root/docker_projects/rvgate.nl
     files:
       - docker-compose.yaml
-  when: build.changed
+    build: always
+  when: checkout.changed or config.changed
